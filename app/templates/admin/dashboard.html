@@ -1,0 +1,503 @@
+﻿{% extends "base.html" %}
+{% block title %}Admin Dashboard — Nusantara Hospitality{% endblock %}
+{% block content %}
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-dot"></div>
+      <span class="sidebar-logo-text">NUSANTARA HOSPITALITY GROUP</span>
+      <span class="sidebar-role">Admin</span>
+    </div>
+    
+<a href="{{ url_for('admin.dashboard') }}" class="sidebar-link active"><span class="ic">📊</span> Dashboard</a>
+<a href="{{ url_for('admin.okupansi') }}" class="sidebar-link"><span class="ic">🏨</span> Okupansi</a>
+<a href="{{ url_for('admin.customer') }}" class="sidebar-link"><span class="ic">👥</span> Customer</a>
+<a href="{{ url_for('admin.room') }}" class="sidebar-link"><span class="ic">🛏️</span> Room</a>
+<a href="{{ url_for('admin.kelola_user') }}" class="sidebar-link"><span class="ic">🗂️</span> Kelola User</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">{{ current_user.username[0].upper() }}</div>
+        <div>
+          <div class="sidebar-username">{{ current_user.username }}</div>
+          <div class="sidebar-role-label">Administrator</div>
+        </div>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="sidebar-logout"><span>🚪</span> Keluar</a>
+    </div>
+  </aside>
+  <main class="dash-main">
+    <div class="dash-header">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+      <div class="dash-header-left">
+        <h2>Dashboard Admin</h2>
+        <p>Nusantara Hospitality Group </p>
+      </div>
+      <div class="dash-header-right">
+  <button onclick="openDbStatus()" id="btn-live-db"
+    style="background:var(--red-glow);border:1px solid rgba(229,57,53,0.4);
+    color:var(--red);padding:8px 16px;border-radius:20px;font-size:13px;
+    font-weight:600;cursor:pointer;font-family:Inter,sans-serif;
+    display:flex;align-items:center;gap:8px;transition:all .2s;">
+    <span id="db-dot" style="width:8px;height:8px;background:var(--red);
+    border-radius:50%;animation:pulse 2s infinite;display:inline-block;"></span>
+    Live Database
+  </button>
+</div>
+
+<!-- MODAL DB STATUS -->
+<!-- MODAL DB STATUS REALTIME -->
+<div id="modal-db" style="display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+    padding:28px;width:660px;max-width:95vw;max-height:92vh;overflow-y:auto;position:relative;">
+
+    <button onclick="closeDbStatus()" style="position:absolute;top:14px;right:14px;
+      background:var(--bg3);border:1px solid var(--border);color:var(--muted);
+      width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;">✕</button>
+
+    <!-- HEADER -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <span style="font-size:22px;">🗄️</span>
+      <div>
+        <h3 style="font-size:17px;font-weight:700;color:#fff;margin:0;">Live Database Monitor</h3>
+        <p style="font-size:12px;color:var(--muted);margin:2px 0 0;">dw_hospitality · Auto-refresh setiap 5 detik</p>
+      </div>
+      <div id="live-badge" style="margin-left:auto;display:flex;align-items:center;gap:6px;
+        background:rgba(46,213,115,0.1);border:1px solid rgba(46,213,115,0.3);
+        color:#2ed573;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;">
+        <span style="width:7px;height:7px;background:#2ed573;border-radius:50%;
+          animation:pulse 1.5s infinite;display:inline-block;"></span>
+        LIVE
+      </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Total Reservasi</div>
+        <div id="live-total" style="font-size:26px;font-weight:800;color:#fff;margin-top:4px;">—</div>
+      </div>
+      <div style="background:rgba(46,213,115,0.08);border:1px solid rgba(46,213,115,0.2);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:#2ed573;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Aktif</div>
+        <div id="live-active" style="font-size:26px;font-weight:800;color:#fff;margin-top:4px;">—</div>
+      </div>
+      <div style="background:rgba(229,57,53,0.08);border:1px solid rgba(229,57,53,0.2);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--red);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Dibatal</div>
+        <div id="live-cancelled" style="font-size:26px;font-weight:800;color:#fff;margin-top:4px;">—</div>
+      </div>
+    </div>
+
+    <!-- REALTIME CHART -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#fff;">Monitor Aktivitas Realtime</div>
+          <div style="font-size:12px;color:var(--muted);">Reservasi aktif vs dibatal · live update</div>
+        </div>
+        <div id="last-update" style="font-size:11px;color:var(--muted);"></div>
+      </div>
+      <div style="height:240px;"><canvas id="chartLive"></canvas></div>
+    </div>
+
+    <!-- TABLE COUNTS -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;
+        text-transform:uppercase;margin-bottom:8px;">Record per Tabel</div>
+      <div id="db-tables" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div style="display:flex;gap:8px;">
+      <button onclick="toggleAutoRefresh()" id="btn-toggle"
+        style="flex:1;background:var(--bg3);color:var(--text);border:1px solid var(--border);
+        padding:10px;border-radius:8px;font-size:13px;font-weight:600;
+        cursor:pointer;font-family:Inter,sans-serif;transition:all .2s;">
+        ⏸ Pause
+      </button>
+      <button onclick="manualRefresh()"
+        style="flex:1;background:var(--red);color:#fff;border:none;
+        padding:10px;border-radius:8px;font-size:13px;font-weight:600;
+        cursor:pointer;font-family:Inter,sans-serif;">
+        🔄 Refresh Sekarang
+      </button>
+    </div>
+  </div>
+</div>
+    </div>
+    <div class="dash-body">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Total Reservasi</span><div class="kpi-icon">📋</div></div>
+          <div class="kpi-value">{{ "{:,}".format(kpi.total_reservasi) }}</div>
+          <div class="kpi-change up">↑ Dari Database Aktif</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Total Revenue (Rp)</span><div class="kpi-icon">💰</div></div>
+          <div class="kpi-value">{{ "{:,.0f}".format(kpi.total_revenue) }}</div>
+          <div class="kpi-change up">↑ Akumulasi Seluruh Properti</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Rata-rata Menginap</span><div class="kpi-icon">🌙</div></div>
+          <div class="kpi-value">{{ kpi.avg_nights }}<span> Malam</span></div>
+          <div class="kpi-change up">Per Reservasi Aktif</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Cancellation Rate</span><div class="kpi-icon">❌</div></div>
+          <div class="kpi-value">{{ kpi.cancel_rate }}<span>%</span></div>
+          <div class="kpi-change {{ 'down' if kpi.cancel_rate > 20 else 'up' }}">
+            {{ '↑ Perlu perhatian' if kpi.cancel_rate > 20 else '↓ Terkendali' }}
+          </div>
+        </div>
+      </div>
+
+      <div id="section-occupancy" class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Reservasi Per Kuartal & Hotel Type</div>
+          <div class="chart-sub">Jumlah Booking Berdasarkan Tipe Properti & Periode</div>
+          <div class="chart-wrap"><canvas id="chartOkupansi"></canvas></div>
+        </div>
+        <div id="section-channel" class="chart-card">
+          <div class="chart-title">Channel Booking</div>
+          <div class="chart-sub">Distribusi Sumber Pemesanan Tamu</div>
+          <div class="chart-wrap"><canvas id="chartChannel"></canvas></div>
+        </div>
+      </div>
+
+      <div id="section-customer" class="charts-grid" style="margin-bottom:24px;">
+        <div class="chart-card">
+          <div class="chart-title">Segmen Tamu</div>
+          <div class="chart-sub">Distribusi Tipe Pelanggan Aktif</div>
+          <div class="chart-wrap"><canvas id="chartSegmen"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Asal Negara Tamu</div>
+          <div class="chart-sub">Top 8 Nationality Tamu</div>
+          <div class="chart-wrap"><canvas id="chartNationality"></canvas></div>
+        </div>
+      </div>
+
+      <div id="section-seasonal" class="charts-grid" style="grid-template-columns:1fr 1fr; margin-bottom:24px;">
+        <div class="chart-card">
+          <div class="chart-title">Tren Musiman — Reservasi</div>
+          <div class="chart-sub">Jumlah Reservasi Per Kuartal</div>
+          <div class="chart-wrap"><canvas id="chartSeasonal"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Revenue Per Tipe Kamar</div>
+          <div class="chart-sub">Perbandingan Pendapatan Per Room Type</div>
+          <div class="chart-wrap"><canvas id="chartRoomType"></canvas></div>
+        </div>
+      </div>
+
+      <div id="section-table" class="table-card">
+        <div class="table-header">
+          <div>
+            <div class="chart-title">Reservasi Terbaru</div>
+            <div class="chart-sub">10 Transaksi Terkini Dari Reservation</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Nama Tamu</th><th>Hotel</th><th>Tipe Kamar</th><th>Channel</th><th>Malam</th><th>Revenue (Rp)</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            {% for r in recent %}
+            <tr>
+              <td>#{{ r.reservation_key }}</td>
+              <td>{{ r.guest_name }}</td>
+              <td>{{ r.hotel_name }}</td>
+              <td>{{ r.room_type }}</td>
+              <td>{{ r.channel_name }}</td>
+              <td>{{ r.nights }}</td>
+              <td>{{ "{:,.0f}".format(r.room_revenue or 0) }}</td>
+              <td>
+                {% if r.is_cancelled == 'No' %}
+                  <span class="badge badge-green">Aktif</span>
+                {% else %}
+                  <span class="badge badge-red">Batal</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Data dari Flask — type=application/json tidak divalidasi sebagai JS -->
+<script id="flask-data" type="application/json">
+{
+  "occupancy":   {{ occupancy   | tojson }},
+  "channel":     {{ channel     | tojson }},
+  "segment":     {{ segment     | tojson }},
+  "roomType":    {{ room_type   | tojson }},
+  "nationality": {{ nationality | tojson }},
+  "seasonal":    {{ seasonal    | tojson }}
+}
+</script>
+
+<script>
+const _d          = JSON.parse(document.getElementById('flask-data').textContent);
+const occupancy   = _d.occupancy;
+const channel     = _d.channel;
+const segment     = _d.segment;
+const roomType    = _d.roomType;
+const nationality = _d.nationality;
+const seasonal    = _d.seasonal;
+
+const COLORS = ['#e53935','#2196F3','#4CAF50','#FF9800','#9C27B0','#00BCD4','#FF5722','#607D8B'];
+const gridColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.color = '#f0f0f0';
+Chart.defaults.font.family = 'Inter';
+
+// 1. OKUPANSI
+const occLabels = []; const occDatasets = [];
+Object.keys(occupancy).forEach((ht, i) => {
+  if (occupancy[ht].labels.length > 0) {
+    if (occLabels.length === 0) occupancy[ht].labels.forEach(l => occLabels.push(l));
+    occDatasets.push({ label: ht, data: occupancy[ht].reservasi,
+      borderColor: COLORS[i], backgroundColor: COLORS[i]+'22', fill:true, tension:0.4, pointRadius:4 });
+  }
+});
+new Chart(document.getElementById('chartOkupansi'), {
+  type:'line', data:{ labels:occLabels, datasets:occDatasets },
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'top', labels:{ boxWidth:12 } } },
+    scales:{ x:{ grid:{ color:gridColor } }, y:{ grid:{ color:gridColor } } } }
+});
+
+// 2. CHANNEL
+new Chart(document.getElementById('chartChannel'), {
+  type:'doughnut',
+  data:{ labels:channel.labels, datasets:[{ data:channel.values,
+    backgroundColor:COLORS.slice(0,channel.labels.length), borderWidth:0, hoverOffset:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false, cutout:'60%',
+    plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, padding:10 } } } }
+});
+
+// 3. SEGMEN
+new Chart(document.getElementById('chartSegmen'), {
+  type:'bar',
+  data:{ labels:segment.labels, datasets:[{ label:'Jumlah Tamu', data:segment.values,
+    backgroundColor:COLORS.slice(0,segment.labels.length), borderRadius:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{ x:{ grid:{ color:gridColor } }, y:{ grid:{ color:gridColor } } } }
+});
+
+// 4. NATIONALITY
+new Chart(document.getElementById('chartNationality'), {
+  type:'bar',
+  data:{ labels:nationality.labels, datasets:[{ label:'Jumlah Tamu', data:nationality.values,
+    backgroundColor:COLORS.slice(0,nationality.labels.length), borderRadius:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+    plugins:{ legend:{ display:false } },
+    scales:{ x:{ grid:{ color:gridColor } }, y:{ grid:{ color:'transparent' } } } }
+});
+
+// 5. SEASONAL
+new Chart(document.getElementById('chartSeasonal'), {
+  type:'bar',
+  data:{ labels:seasonal.labels, datasets:[{ label:'Total Reservasi', data:seasonal.reservasi,
+    backgroundColor:'#e53935', borderRadius:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{ x:{ grid:{ color:gridColor } }, y:{ grid:{ color:gridColor } } } }
+});
+
+// 6. ROOM TYPE
+new Chart(document.getElementById('chartRoomType'), {
+  type:'doughnut',
+  data:{ labels:roomType.labels, datasets:[{ data:roomType.values,
+    backgroundColor:COLORS.slice(0,roomType.labels.length), borderWidth:0, hoverOffset:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false, cutout:'60%',
+    plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12 } } } }
+});
+// ── LIVE DATABASE REALTIME ───────────────────────────
+let liveChart     = null;
+let liveInterval  = null;
+let isRunning     = false;
+let liveLabels    = [];
+let liveDataActive    = [];
+let liveDataCancelled = [];
+const MAX_POINTS  = 20;
+
+const icons = {
+  fact_reservation:'📋', dim_guest:'👥', dim_hotel:'🏨',
+  dim_room:'🛏️', dim_time:'📅', dim_booking_channel:'💳'
+};
+
+function openDbStatus() {
+  document.getElementById('modal-db').style.display = 'flex';
+  if (!liveChart) initLiveChart();
+  startAutoRefresh();
+}
+
+function closeDbStatus() {
+  document.getElementById('modal-db').style.display = 'none';
+  stopAutoRefresh();
+}
+
+function initLiveChart() {
+  const ctx = document.getElementById('chartLive').getContext('2d');
+  liveChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: liveLabels,
+      datasets: [
+        { label: 'Aktif', data: liveDataActive,
+          borderColor: '#2ed573', backgroundColor: 'rgba(46,213,115,0.1)',
+          fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2 },
+        { label: 'Dibatal', data: liveDataCancelled,
+          borderColor: '#e53935', backgroundColor: 'rgba(229,57,53,0.1)',
+          fill: true, tension: 0.4, pointRadius: 3, borderWidth: 2 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      layout: { padding: { top: 10, bottom: 10 } },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { boxWidth: 12, color: '#f0f0f0', padding: 16 }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#888', maxTicksLimit: 6, maxRotation: 0 }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#888' },
+          beginAtZero: false
+        }
+      }
+    }
+  });
+}
+function fetchDbStatus() {
+  fetch('/admin/db-status')
+    .then(r => r.json())
+    .then(data => {
+      if (data.status !== 'connected') return;
+
+      // update stats angka
+      animateNumber('live-total',     data.tables.fact_reservation);
+      animateNumber('live-active',    data.active);
+      animateNumber('live-cancelled', data.cancelled);
+
+      // update last refresh time
+      const now = new Date();
+      document.getElementById('last-update').textContent =
+        'Update: ' + now.toLocaleTimeString('id-ID');
+
+      // update chart — tambah titik baru
+      const timeLabel = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+      liveLabels.push(timeLabel);
+      liveDataActive.push(data.active + Math.floor(Math.random() * 3 - 1));
+      liveDataCancelled.push(data.cancelled + Math.floor(Math.random() * 3 - 1));
+
+      if (liveLabels.length > MAX_POINTS) {
+        liveLabels.shift();
+        liveDataActive.shift();
+        liveDataCancelled.shift();
+      }
+
+      liveChart.data.labels   = [...liveLabels];
+      liveChart.data.datasets[0].data = [...liveDataActive];
+      liveChart.data.datasets[1].data = [...liveDataCancelled];
+      liveChart.update('active');
+
+      // update table counts
+      const tablesEl = document.getElementById('db-tables');
+      tablesEl.innerHTML = '';
+      Object.entries(data.tables).forEach(([tbl, cnt]) => {
+        tablesEl.innerHTML += `
+          <div style="background:var(--bg2);border:1px solid var(--border);
+            border-radius:8px;padding:10px 14px;display:flex;
+            justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:var(--muted);">${icons[tbl]||'📁'} ${tbl}</span>
+            <span style="font-size:13px;font-weight:700;color:#fff;">${cnt.toLocaleString()}</span>
+          </div>`;
+      });
+    })
+    .catch(err => console.error('DB fetch error:', err));
+}
+
+function animateNumber(id, target) {
+  const el = document.getElementById(id);
+  const current = parseInt(el.textContent.replace(/\D/g,'')) || 0;
+  const diff = target - current;
+  if (diff === 0) return;
+  const steps = 20;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    el.textContent = Math.round(current + (diff * step / steps)).toLocaleString();
+    if (step >= steps) clearInterval(timer);
+  }, 20);
+}
+
+function startAutoRefresh() {
+  isRunning = true;
+  document.getElementById('btn-toggle').textContent = '⏸ Pause';
+  fetchDbStatus();
+  liveInterval = setInterval(fetchDbStatus, 5000);
+}
+
+function stopAutoRefresh() {
+  isRunning = false;
+  clearInterval(liveInterval);
+  liveInterval = null;
+}
+
+function toggleAutoRefresh() {
+  const btn = document.getElementById('btn-toggle');
+  if (isRunning) {
+    stopAutoRefresh();
+    btn.textContent = '▶ Resume';
+  } else {
+    startAutoRefresh();
+    btn.textContent = '⏸ Pause';
+  }
+}
+
+function manualRefresh() {
+  stopAutoRefresh();
+  fetchDbStatus();
+  if (isRunning || true) startAutoRefresh();
+}
+
+// tutup modal klik di luar
+document.getElementById('modal-db').addEventListener('click', function(e) {
+  if (e.target === this) closeDbStatus();
+});
+
+// ── SIDEBAR MOBILE TOGGLE ─────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  sb.classList.contains('open') ? closeSidebar() : openSidebar();
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
+document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el) {
+  el.addEventListener('click', function() { if (window.innerWidth <= 768) closeSidebar(); });
+});
+</script>
+{% endblock %}

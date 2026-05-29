@@ -1,0 +1,35 @@
+﻿<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-dot"></div>
+    <span class="sidebar-logo-text">Nusantara</span>
+    <span class="sidebar-role" style="background:rgba(33,150,243,0.15);color:#2196F3;border:1px solid rgba(33,150,243,0.3);">User</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">Menu</div>
+    <a href="{{ url_for('user.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.dashboard' }}">
+      <span class="ic">📊</span> Dashboard
+    </a>
+    <a href="{{ url_for('user.okupansi') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.okupansi' }}">
+      <span class="ic">🏨</span> Okupansi
+    </a>
+    <a href="{{ url_for('user.customer') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.customer' }}">
+      <span class="ic">👥</span> Customer
+    </a>
+    <a href="{{ url_for('user.seasonal') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.seasonal' }}">
+      <span class="ic">📈</span> Tren Musiman
+    </a>
+    <a href="{{ url_for('user.room') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.room' }}">
+      <span class="ic">🛏️</span> Tipe Kamar
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" style="background:#2196F3;">{{ current_user.username[0].upper() }}</div>
+      <div>
+        <div class="sidebar-username">{{ current_user.username }}</div>
+        <div class="sidebar-role-label">User · View Only</div>
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="sidebar-logout"><span>🚪</span> Keluar</a>
+  </div>
+</aside>

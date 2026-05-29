@@ -1,0 +1,109 @@
+﻿{% extends "base.html" %}
+{% block title %}Customer — Nusantara{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="sidebar-logo-dot"></div><span class="sidebar-logo-text">NUSANTARA HOSPITALITY GROUP</span><span class="sidebar-role">Admin</span></div>
+    <a href="{{ url_for('admin.dashboard') }}" class="sidebar-link"><span class="ic">📊</span> Dashboard</a>
+<a href="{{ url_for('admin.okupansi') }}" class="sidebar-link"><span class="ic">🏨</span> Okupansi</a>
+<a href="{{ url_for('admin.customer') }}" class="sidebar-link active"><span class="ic">👥</span> Customer</a>
+<a href="{{ url_for('admin.room') }}" class="sidebar-link"><span class="ic">🛏️</span> Room</a>
+<a href="{{ url_for('admin.kelola_user') }}" class="sidebar-link"><span class="ic">🗂️</span> Kelola User</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user"><div class="sidebar-avatar">{{ current_user.username[0].upper() }}</div><div><div class="sidebar-username">{{ current_user.username }}</div><div class="sidebar-role-label">Administrator</div></div></div>
+      <a href="{{ url_for('auth.logout') }}" class="sidebar-logout"><span>🚪</span> Keluar</a>
+    </div>
+  </aside>
+  <main class="dash-main">
+    <div class="dash-header">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+      <div class="dash-header-left"><h2>Analisis Customer</h2><p>Segmen, Nationality & Perilaku Tamu</p></div>
+      <div class="dash-header-right">
+        <a href="{{ url_for('admin.export', tipe='customer', year=selected.year or '', hotel_type=selected.hotel_type or '', channel=selected.channel or '', format='excel') }}" class="nav-btn" style="font-size:13px;padding:8px 16px;">⬇ Export Excel</a>
+      </div>
+    </div>
+    <div class="dash-body">
+      <form method="GET" style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+        <select name="year" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Tahun</option>
+          {% for y in filter_opts.years %}<option value="{{ y }}" {{ 'selected' if selected.year == y|string }}>{{ y }}</option>{% endfor %}
+        </select>
+        <select name="hotel_type" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Tipe Hotel</option>
+          {% for h in filter_opts.hotel_types %}<option value="{{ h }}" {{ 'selected' if selected.hotel_type == h }}>{{ h }}</option>{% endfor %}
+        </select>
+        <select name="channel" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Channel</option>
+          {% for c in filter_opts.channels %}<option value="{{ c }}" {{ 'selected' if selected.channel == c }}>{{ c }}</option>{% endfor %}
+        </select>
+        {% if selected.year or selected.hotel_type or selected.channel %}
+        <a href="{{ url_for('admin.customer') }}" style="padding:9px 14px;background:var(--red-glow);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:13px;text-decoration:none;">✕ Reset</a>
+        {% endif %}
+      </form>
+      <div class="charts-grid" style="margin-bottom:24px;">
+        <div class="chart-card"><div class="chart-title">Segmen Tamu</div><div class="chart-sub">Distribusi Tipe Pelanggan</div><div class="chart-wrap"><canvas id="chartSeg"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Asal Negara (Top 8)</div><div class="chart-sub">Nationality Tamu Terbanyak</div><div class="chart-wrap"><canvas id="chartNat"></canvas></div></div>
+      </div>
+      <div class="table-card">
+  <div class="table-toolbar">
+    <div>
+      <div class="chart-title">Top 100 Customer</div>
+      <div class="chart-sub">Diurutkan total spend · <span id="table-customer-count"></span></div>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-table-customer" placeholder="Cari nama, negara, segmen..."/>
+    </div>
+  </div>
+  <div style="overflow-x:auto;">
+    <table id="table-customer" data-search data-pagesize="15">
+      <thead>
+        <tr><th>No</th><th>Nama Tamu</th><th>Negara</th><th>Segmen</th><th>Kota</th><th>Total Booking</th><th>Total Malam</th><th>Total Spend (Rp)</th><th>Avg Spend (Rp)</th></tr>
+      </thead>
+      <tbody>
+        {% for r in data %}
+        <tr>
+          <td>{{ loop.index }}</td><td>{{ r.guest_name }}</td><td>{{ r.nationality }}</td>
+          <td><span class="badge badge-yellow">{{ r.segment }}</span></td><td>{{ r.city }}</td>
+          <td>{{ r.total_booking }}</td><td>{{ r.total_malam }}</td>
+          <td>{{ "{:,.0f}".format(r.total_spend|float) }}</td>
+          <td>{{ "{:,.0f}".format(r.avg_spend|float) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="table-pagination" id="table-customer-pagination"></div>
+</div>
+    </div>
+  </main>
+</div>
+<script>
+const seg={{ segment|safe }}, nat={{ nationality|safe }};
+const COLORS=['#e53935','#2196F3','#4CAF50','#FF9800','#9C27B0','#00BCD4','#FF5722','#607D8B'];
+const gc='rgba(255,255,255,0.06)';
+Chart.defaults.color='#f0f0f0'; Chart.defaults.font.family='Inter';
+new Chart(document.getElementById('chartSeg'),{type:'doughnut',data:{labels:seg.labels,datasets:[{data:seg.values,backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:12}}}}});
+new Chart(document.getElementById('chartNat'),{type:'bar',data:{labels:nat.labels,datasets:[{label:'Tamu',data:nat.values,backgroundColor:COLORS,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:gc}},y:{grid:{color:'transparent'}}}}});
+
+// ── SIDEBAR MOBILE TOGGLE ─────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  sb.classList.contains('open') ? closeSidebar() : openSidebar();
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
+document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el) {
+  el.addEventListener('click', function() { if (window.innerWidth <= 768) closeSidebar(); });
+});
+</script>
+{% endblock %}

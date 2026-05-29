@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Login — Nusantara Hospitality{% endblock %}
+{% block content %}
+<div class="login-page">
+
+  <!-- LEFT PANEL -->
+  <div class="login-left">
+    <div class="login-left-bg"></div>
+    <div class="login-left-content">
+      <div class="login-brand">
+        <div class="login-brand-dot"></div>
+        <span class="login-brand-name">Nusantara Hospitality Group</span>
+      </div>
+      <h1>Selamat<br/>Datang<br/>Kembali <span>.</span></h1>
+      <p>Platform analitik data hotel, resort, dan restoran Nusantara Hospitality Group. Akses dashboard sesuai peran Anda.</p>
+      <div class="login-stats">
+        <div class="l-stat">
+          <div class="l-stat-num">85<span>%</span></div>
+          <div class="l-stat-label">Avg. Okupansi</div>
+        </div>
+        <div class="l-stat">
+          <div class="l-stat-num">3<span>+</span></div>
+          <div class="l-stat-label">Properti Aktif</div>
+        </div>
+        <div class="l-stat">
+          <div class="l-stat-num">12<span>K</span></div>
+          <div class="l-stat-label">Data Reservasi</div>
+        </div>
+        <div class="l-stat">
+          <div class="l-stat-num">4</div>
+          <div class="l-stat-label">Sumber Data</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="login-right">
+    <div class="login-box">
+      <h2>Masuk Ke Dashboard</h2>
+      <p>Pilih Peran Dan Masukkan kredensial Anda</p>
+
+      <!-- ROLE TABS -->
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole('admin', this)">🔑 Admin</button>
+        <button class="role-tab" onclick="setRole('user', this)">👤 User</button>
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.login') }}">
+        <div class="form-group">
+          <label>USERNAME</label>
+          <input type="text" name="username" placeholder="Masukkan username" required autocomplete="username"/>
+        </div>
+        <div class="form-group">
+          <label>PASSWORD</label>
+          <input type="password" name="password" placeholder="Masukkan password" required autocomplete="current-password"/>
+        </div>
+        <button type="submit" class="login-submit">Masuk →</button>
+      </form>
+
+      <p style="text-align:center; margin-top:20px; font-size:13px; color:#555;">
+        <a href="{{ url_for('main.landing') }}" style="color:var(--muted); text-decoration:none;">
+          ← Kembali Ke Halaman Utama
+        </a>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function setRole(role, el) {
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,122 @@
+﻿{% extends "base.html" %}
+{% block title %}Kelola User — Nusantara<script>
+
+// ── SIDEBAR MOBILE TOGGLE ─────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  sb.classList.contains('open') ? closeSidebar() : openSidebar();
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
+document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el) {
+  el.addEventListener('click', function() { if (window.innerWidth <= 768) closeSidebar(); });
+});
+</script>
+{% endblock %}
+{% block content %}
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="sidebar-logo-dot"></div><span class="sidebar-logo-text">NUSANTARA HOSPITALITY GROUP</span><span class="sidebar-role">Admin</span></div>
+   <a href="{{ url_for('admin.dashboard') }}" class="sidebar-link"><span class="ic">📊</span> Dashboard</a>
+<a href="{{ url_for('admin.okupansi') }}" class="sidebar-link"><span class="ic">🏨</span> Okupansi</a>
+<a href="{{ url_for('admin.customer') }}" class="sidebar-link"><span class="ic">👥</span> Customer</a>
+<a href="{{ url_for('admin.room') }}" class="sidebar-link"><span class="ic">🛏️</span> Room</a>
+<a href="{{ url_for('admin.kelola_user') }}" class="sidebar-link active"><span class="ic">🗂️</span> Kelola User</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user"><div class="sidebar-avatar">{{ current_user.username[0].upper() }}</div><div><div class="sidebar-username">{{ current_user.username }}</div><div class="sidebar-role-label">Administrator</div></div></div>
+      <a href="{{ url_for('auth.logout') }}" class="sidebar-logout"><span>🚪</span> Keluar</a>
+    </div>
+  </aside>
+  <main class="dash-main">
+    <div class="dash-header">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+      <div class="dash-header-left"><h2>Kelola User</h2><p>Manajemen AkunAdmin & user</p></div>
+    </div>
+    <div class="dash-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="table-card">
+          <div class="chart-title" style="margin-bottom:20px;">➕ Tambah User Baru</div>
+          <form method="POST" action="{{ url_for('admin.tambah_user') }}">
+            <div class="form-group">
+              <label>USERNAME</label>
+              <input type="text" name="username" placeholder="Username" required style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;">
+            </div>
+            <div class="form-group">
+              <label>EMAIL</label>
+              <input type="email" name="email" placeholder="email@example.com" required style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;">
+            </div>
+            <div class="form-group">
+              <label>PASSWORD</label>
+              <input type="password" name="password" placeholder="Password" required style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;">
+            </div>
+            <div class="form-group">
+              <label>ROLE</label>
+              <select name="role" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <button type="submit" class="login-submit" style="margin-top:8px;">Tambah User</button>
+          </form>
+        </div>
+        <div class="table-card">
+          <div class="chart-title" style="margin-bottom:20px;">👤 Daftar User ({{ users|length }})</div>
+          <table>
+            <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Aksi</th></tr></thead>
+            <tbody>
+              {% for u in users %}
+              <tr>
+                <td><strong>{{ u.username }}</strong></td>
+                <td style="color:var(--muted);font-size:12px;">{{ u.email }}</td>
+                <td>
+                  {% if u.role == 'admin' %}<span class="badge badge-red">Admin</span>
+                  {% else %}<span class="badge badge-green">User</span>{% endif %}
+                </td>
+                <td>
+                  {% if u.id != current_user.id %}
+                  <form method="POST" action="{{ url_for('admin.hapus_user', uid=u.id) }}" onsubmit="return confirm('Hapus user {{ u.username }}?')">
+                    <button type="submit" style="background:rgba(229,57,53,0.15);border:1px solid var(--red);color:var(--red);padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Hapus</button>
+                  </form>
+                  {% else %}<span style="color:var(--muted);font-size:12px;">Anda</span>{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+
+// ── SIDEBAR MOBILE TOGGLE ─────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  sb.classList.contains('open') ? closeSidebar() : openSidebar();
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
+document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el) {
+  el.addEventListener('click', function() { if (window.innerWidth <= 768) closeSidebar(); });
+});
+</script>
+{% endblock %}

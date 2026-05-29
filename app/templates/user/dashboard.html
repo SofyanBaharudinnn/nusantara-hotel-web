@@ -1,0 +1,139 @@
+﻿{% extends "base.html" %}
+{% block title %}Dashboard — Nusantara{% endblock %}
+{% block content %}
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+
+  <!-- SIDEBAR INLINE -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-dot"></div>
+      <span class="sidebar-logo-text">Nusantara</span>
+      <span class="sidebar-role" style="background:rgba(33,150,243,0.15);color:#2196F3;border:1px solid rgba(33,150,243,0.3);">User</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Menu</div>
+      <a href="{{ url_for('user.dashboard') }}" class="sidebar-link active"><span class="ic">📊</span> Dashboard</a>
+      <a href="{{ url_for('user.okupansi') }}" class="sidebar-link"><span class="ic">🏨</span> Okupansi</a>
+      <a href="{{ url_for('user.customer') }}" class="sidebar-link"><span class="ic">👥</span> Customer</a>
+      <a href="{{ url_for('user.seasonal') }}" class="sidebar-link"><span class="ic">📈</span> Tren Musiman</a>
+      <a href="{{ url_for('user.room') }}" class="sidebar-link"><span class="ic">🛏️</span> Tipe Kamar</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" style="background:#2196F3;">{{ current_user.username[0].upper() }}</div>
+        <div>
+          <div class="sidebar-username">{{ current_user.username }}</div>
+          <div class="sidebar-role-label">User · View Only</div>
+        </div>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="sidebar-logout"><span>🚪</span> Keluar</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="dash-main">
+    <div class="dash-header">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+      <div class="dash-header-left"><h2>Dashboard</h2><p>Overview Data Nusantara Hospitality Group</p></div>
+      <div class="dash-header-right">
+        <span class="header-badge" style="background:rgba(33,150,243,0.1);border-color:rgba(33,150,243,0.3);color:#2196F3;">● View Only</span>
+      </div>
+    </div>
+    <div class="dash-body">
+
+      <!-- FILTER -->
+      <form method="GET" style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+        <select name="year" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Tahun</option>
+          {% for y in filter_opts.years %}<option value="{{ y }}" {{ 'selected' if selected.year == y|string }}>{{ y }}</option>{% endfor %}
+        </select>
+        <select name="hotel_type" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Tipe Hotel</option>
+          {% for h in filter_opts.hotel_types %}<option value="{{ h }}" {{ 'selected' if selected.hotel_type == h }}>{{ h }}</option>{% endfor %}
+        </select>
+        <select name="channel" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Channel</option>
+          {% for c in filter_opts.channels %}<option value="{{ c }}" {{ 'selected' if selected.channel == c }}>{{ c }}</option>{% endfor %}
+        </select>
+        {% if selected.year or selected.hotel_type or selected.channel %}
+        <a href="{{ url_for('user.dashboard') }}" style="padding:9px 14px;background:var(--red-glow);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:13px;text-decoration:none;">✕ Reset</a>
+        {% endif %}
+      </form>
+
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Total Reservasi</span><div class="kpi-icon">📋</div></div>
+          <div class="kpi-value">{{ "{:,}".format(kpi.total_reservasi) }}</div>
+          <div class="kpi-change up">↑ Semua Properti</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Total Tamu</span><div class="kpi-icon">👥</div></div>
+          <div class="kpi-value">{{ "{:,}".format(kpi.total_tamu) }}</div>
+          <div class="kpi-change up">↑ Tamu Unik</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Avg. Menginap</span><div class="kpi-icon">🌙</div></div>
+          <div class="kpi-value">{{ kpi.avg_nights }}<span> Malam</span></div>
+          <div class="kpi-change up">Per Reservasi Aktif</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Cancellation Rate</span><div class="kpi-icon">❌</div></div>
+          <div class="kpi-value">{{ kpi.cancel_rate }}<span>%</span></div>
+          <div class="kpi-change {{ 'down' if kpi.cancel_rate > 20 else 'up' }}">
+            {{ '↑ Perlu perhatian' if kpi.cancel_rate > 20 else '↓ Terkendali' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW 1 -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Tren Reservasi Per Kuartal</div>
+          <div class="chart-sub">Per Tipe Hotel</div>
+          <div class="chart-wrap"><canvas id="chartOkup"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Channel Booking</div>
+          <div class="chart-sub">Sumber Pemesanan Tamu</div>
+          <div class="chart-wrap"><canvas id="chartCh"></canvas></div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW 2 -->
+      <div class="charts-grid" style="grid-template-columns:1fr 1fr;margin-bottom:24px;">
+        <div class="chart-card">
+          <div class="chart-title">Segmen Tamu</div>
+          <div class="chart-sub">Distribusi Tipe Pelanggan</div>
+          <div class="chart-wrap"><canvas id="chartSeg"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Tipe Kamar</div>
+          <div class="chart-sub">Distribusi Booking Per Room Type</div>
+          <div class="chart-wrap"><canvas id="chartRoom"></canvas></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const occ={{ occupancy|safe }}, seg={{ segment|safe }}, rt={{ room_type|safe }}, ch={{ channel_data|safe }};
+const COLORS=['#e53935','#2196F3','#4CAF50','#FF9800','#9C27B0','#00BCD4','#FF5722','#607D8B'];
+const gc='rgba(255,255,255,0.06)';
+Chart.defaults.color='#f0f0f0'; Chart.defaults.font.family='Inter';
+const labels=[]; const ds=[];
+Object.keys(occ).forEach((ht,i)=>{
+  if(occ[ht].labels.length>0){
+    if(!labels.length) occ[ht].labels.forEach(l=>labels.push(l));
+    ds.push({label:ht,data:occ[ht].reservasi,borderColor:COLORS[i],backgroundColor:COLORS[i]+'22',fill:true,tension:0.4,pointRadius:4});
+  }
+});
+new Chart(document.getElementById('chartOkup'),{type:'line',data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{x:{grid:{color:gc}},y:{grid:{color:gc}}}}});
+new Chart(document.getElementById('chartCh'),{type:'doughnut',data:{labels:ch.labels,datasets:[{data:ch.values,backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:10}}}}});
+new Chart(document.getElementById('chartSeg'),{type:'bar',data:{labels:seg.labels,datasets:[{data:seg.values,backgroundColor:COLORS,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc}},y:{grid:{color:gc}}}}});
+new Chart(document.getElementById('chartRoom'),{type:'doughnut',data:{labels:rt.labels,datasets:[{data:rt.values,backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:12}}}}});
+</script>
+{% endblock %}

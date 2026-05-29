@@ -1,0 +1,784 @@
+{% extends "base.html" %}
+{% block title %}Nusantara Hospitality Group — Data Analytics{% endblock %}
+
+{% block content %}
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  scroll-behavior:smooth;
+  font-family:'Segoe UI',sans-serif;
+}
+
+body{
+  background:#070707;
+}
+
+.landing{
+  background:#070707;
+  color:white;
+  overflow:hidden;
+}
+
+/* ================= NAVBAR ================= */
+
+nav{
+  width:100%;
+  padding:22px 7%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:999;
+  background:rgba(10,10,10,0.75);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:white;
+  font-weight:700;
+  font-size:20px;
+}
+
+.nav-logo-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  box-shadow:0 0 18px #dc2626;
+}
+
+.nav-links{
+  display:flex;
+  gap:32px;
+  list-style:none;
+}
+
+.nav-links a{
+  text-decoration:none;
+  color:#d1d1d1;
+  transition:.3s;
+  font-size:15px;
+}
+
+.nav-links a:hover{
+  color:#ff6b6b;
+}
+
+.nav-btn{
+  text-decoration:none;
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  color:white;
+  padding:13px 24px;
+  border-radius:14px;
+  font-weight:600;
+  transition:.4s;
+}
+
+.nav-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 24px rgba(220,38,38,.35);
+}
+
+/* ================= HERO ================= */
+
+.hero{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  padding:140px 7% 100px;
+  position:relative;
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  width:700px;
+  height:700px;
+  border-radius:50%;
+  background:radial-gradient(circle,#dc2626 0%,transparent 70%);
+  top:-250px;
+  right:-250px;
+  opacity:.28;
+  animation:float 8s ease-in-out infinite;
+}
+
+.hero::after{
+  content:'';
+  position:absolute;
+  width:500px;
+  height:500px;
+  border-radius:50%;
+  background:radial-gradient(circle,#ef4444 0%,transparent 70%);
+  bottom:-180px;
+  left:-150px;
+  opacity:.22;
+  animation:float2 10s ease-in-out infinite;
+}
+
+@keyframes float{
+  0%{transform:translateY(0px);}
+  50%{transform:translateY(25px);}
+  100%{transform:translateY(0px);}
+}
+
+@keyframes float2{
+  0%{transform:translateY(0px);}
+  50%{transform:translateY(-25px);}
+  100%{transform:translateY(0px);}
+}
+
+.hero-content{
+  max-width:760px;
+  position:relative;
+  z-index:2;
+  animation:fadeUp 1.2s ease;
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(40px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 18px;
+  border-radius:50px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  margin-bottom:28px;
+  backdrop-filter:blur(10px);
+}
+
+.hero-badge-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ff4d4d;
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%{
+    box-shadow:0 0 0 0 rgba(255,77,77,.7);
+  }
+  70%{
+    box-shadow:0 0 0 14px rgba(255,77,77,0);
+  }
+  100%{
+    box-shadow:0 0 0 0 rgba(255,77,77,0);
+  }
+}
+
+.hero h1{
+  font-size:74px;
+  line-height:1.08;
+  margin-bottom:24px;
+  font-weight:800;
+}
+
+.hero h1 span{
+  background:linear-gradient(135deg,#ff4d4d,#dc2626);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero p{
+  color:#c9c9c9;
+  line-height:1.9;
+  font-size:18px;
+  max-width:650px;
+  margin-bottom:42px;
+}
+
+.hero-btns{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+}
+
+.btn-primary,
+.btn-outline{
+  padding:16px 28px;
+  border-radius:14px;
+  text-decoration:none;
+  font-weight:600;
+  transition:.4s;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+  color:white;
+}
+
+.btn-primary:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 25px rgba(220,38,38,.35);
+}
+
+.btn-outline{
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.03);
+  color:white;
+}
+
+.btn-outline:hover{
+  background:white;
+  color:#111;
+}
+
+/* ================= STATS ================= */
+
+.stats-bar{
+  width:86%;
+  margin:auto;
+  margin-top:-60px;
+  position:relative;
+  z-index:10;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:22px;
+}
+
+.stat-item{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:24px;
+  padding:35px;
+  backdrop-filter:blur(12px);
+  transition:.4s;
+}
+
+.stat-item:hover{
+  transform:translateY(-10px);
+  border-color:#dc2626;
+  box-shadow:0 15px 35px rgba(220,38,38,.18);
+}
+
+.stat-num{
+  font-size:42px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.stat-label{
+  color:#bdbdbd;
+  line-height:1.7;
+}
+
+/* ================= SECTION ================= */
+
+.section{
+  padding:120px 7%;
+  text-align:center;
+}
+
+.section-tag{
+  color:#ff6b6b;
+  margin-bottom:18px;
+  font-weight:600;
+}
+
+.section-title{
+  font-size:54px;
+  margin-bottom:22px;
+  line-height:1.2;
+}
+
+.section-title span{
+  background:linear-gradient(135deg,#ff4d4d,#dc2626);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.section-desc{
+  max-width:760px;
+  margin:auto;
+  color:#bcbcbc;
+  line-height:1.9;
+}
+
+/* ================= FEATURE ================= */
+
+.features-grid,
+.sources-grid{
+  margin-top:70px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:28px;
+}
+
+.feat-card,
+.source-card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:28px;
+  padding:40px 30px;
+  transition:.4s;
+  backdrop-filter:blur(10px);
+}
+
+.feat-card:hover,
+.source-card:hover{
+  transform:translateY(-12px);
+  border-color:#dc2626;
+  box-shadow:0 15px 35px rgba(220,38,38,.22);
+}
+
+.feat-icon,
+.ic{
+  font-size:52px;
+  margin-bottom:20px;
+}
+
+.feat-title{
+  font-size:24px;
+  margin-bottom:14px;
+  font-weight:700;
+}
+
+.feat-desc,
+.source-card span{
+  color:#bcbcbc;
+  line-height:1.8;
+}
+
+.source-card p{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+/* ================= ABOUT ================= */
+
+.about-section{
+  padding:120px 7%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+.about-content h2{
+  font-size:52px;
+  margin-bottom:25px;
+}
+
+.about-content p{
+  color:#c8c8c8;
+  line-height:1.9;
+  margin-bottom:20px;
+}
+
+.about-box{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:28px;
+  padding:40px;
+  backdrop-filter:blur(10px);
+}
+
+.about-highlight{
+  display:flex;
+  gap:18px;
+  margin-bottom:28px;
+}
+
+.about-highlight span{
+  font-size:34px;
+}
+
+/* ================= MAP ================= */
+
+.map-section{
+  padding:0 7% 120px;
+}
+
+.map-container{
+  overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 20px 45px rgba(0,0,0,.35);
+}
+
+.map-container iframe{
+  width:100%;
+  height:450px;
+  border:none;
+}
+
+/* ================= CTA ================= */
+
+.cta-section{
+  margin:0 7% 120px;
+  padding:60px;
+  border-radius:30px;
+  background:linear-gradient(135deg,#2b0909,#7f1d1d);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:30px;
+  flex-wrap:wrap;
+}
+
+.cta-section h2{
+  font-size:42px;
+  margin-bottom:10px;
+}
+
+.cta-section p{
+  color:#d1d1d1;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+  text-align:center;
+  padding:40px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  color:#8e8e8e;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+  nav{
+    padding:18px 20px;
+  }
+
+  .nav-links{
+    display:none;
+  }
+
+  .hero{
+    padding:140px 20px 100px;
+  }
+
+  .hero h1{
+    font-size:54px;
+  }
+
+  .section-title,
+  .about-content h2{
+    font-size:40px;
+  }
+
+  .about-section{
+    grid-template-columns:1fr;
+    padding:100px 20px;
+  }
+
+  .section{
+    padding:100px 20px;
+  }
+
+  .stats-bar{
+    width:92%;
+  }
+
+  .cta-section{
+    margin:0 20px 100px;
+    padding:40px 30px;
+  }
+}
+</style>
+
+<div class="landing">
+
+  <!-- NAV -->
+  <nav>
+    <a href="{{ url_for('main.landing') }}" class="nav-logo">
+      <div class="nav-logo-dot"></div>
+      <span>Nusantara Hospitality Group</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#features">Fitur</a></li>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#location">Lokasi</a></li>
+    </ul>
+
+    <a href="{{ url_for('auth.login') }}" class="nav-btn">
+      Masuk Dashboard →
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Hotel & Hospitality Analytics
+      </div>
+
+      <h1>
+        Data Intelligence<br>
+        Untuk <span>Hotel & Hospitality</span>
+      </h1>
+
+      <p>
+        Platform Analisis Data Terpadu Untuk Nusantara Hospitality Group —
+        Memantau Okupansi, Perilaku Pelanggan, & Tren Musiman
+        Dari Satu Dashboard Modern.
+      </p>
+
+      <div class="hero-btns">
+        <a href="{{ url_for('auth.login') }}" class="btn-primary">
+          Masuk Dashboard →
+        </a>
+
+        <a href="#overview" class="btn-outline">
+          Lihat Overview
+        </a>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-bar" id="overview">
+
+    <div class="stat-item">
+      <div class="stat-num">3+</div>
+      <div class="stat-label">
+        Properti Hotel, Resort, & Restoran
+      </div>
+    </div>
+
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-label">
+        Sumber Data Terintegrasi
+      </div>
+    </div>
+
+    <div class="stat-item">
+      <div class="stat-num">85%</div>
+      <div class="stat-label">
+        Tingkat Okupansi Rata-rata
+      </div>
+    </div>
+
+    <div class="stat-item">
+      <div class="stat-num">12K+</div>
+      <div class="stat-label">
+        Data Reservasi Tercatat
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+
+    <div class="section-tag">● Fitur Analisis</div>
+
+    <h2 class="section-title">
+      TIGA FOKUS ANALISIS <br>
+      <span>UTAMA</span>
+    </h2>
+
+    <p class="section-desc">
+      Solusi Analitik Modern Untuk Membantu Pengambilan Keputusan
+      Berbasis Data Secara Cepat dan Akurat.
+    </p>
+
+    <div class="features-grid">
+
+      <div class="feat-card">
+        <div class="feat-icon">🏨</div>
+        <div class="feat-title">Okupansi Hotel</div>
+        <div class="feat-desc">
+          Pantau Tingkat Hunian Hotel Secara Real-time
+          Dari Seluruh Properti.
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">👥</div>
+        <div class="feat-title">Customer Behavior</div>
+        <div class="feat-desc">
+          Analisis Perilaku Pelanggan Untuk Strategi
+          Marketing Yang Lebih Efektif.
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">📈</div>
+        <div class="feat-title">Seasonal Trend</div>
+        <div class="feat-desc">
+          Identifikasi Peak Season & Low Season
+          Untuk Optimasi Bisnis Hospitality.
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- DATA -->
+  <section class="section" id="data" style="padding-top:0;">
+
+    <div class="section-tag">● Sumber Data</div>
+
+    <h2 class="section-title">
+      DATA TERINTEGRASI DARI <br>
+      <span>4 SISTEM</span>
+    </h2>
+
+    <div class="sources-grid">
+
+      <div class="source-card">
+        <div class="ic">📋</div>
+        <p>Reservation System</p>
+        <span>Data Pemesanan & Kamar</span>
+      </div>
+
+      <div class="source-card">
+        <div class="ic">💳</div>
+        <p>Payment System</p>
+        <span>Transaksi & Revenue</span>
+      </div>
+
+      <div class="source-card">
+        <div class="ic">🤝</div>
+        <p>CRM</p>
+        <span>Profil & Histori Tamu</span>
+      </div>
+
+      <div class="source-card">
+        <div class="ic">🌐</div>
+        <p>Online Booking</p>
+        <span>Channel Digital & OTA</span>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="about">
+
+    <div class="about-content">
+
+      <div class="section-tag">● About Company</div>
+
+      <h2>
+        Hospitality Modern Dengan Teknologi Data
+      </h2>
+
+      <p>
+        Nusantara Hospitality Group Merupakan Perusahaan Hospitality
+        Yang Berfokus Pada Pengelolaan Hotel, Resort, dan Restoran Modern.
+      </p>
+
+      <p>
+        Dengan Sistem Analitik Terpadu, Perusahaan Mampu Memonitor
+        Performa Bisnis Secara Real-time Untuk Meningkatkan Kualitas
+        Pelayanan Pelanggan.
+      </p>
+
+    </div>
+
+    <div class="about-box">
+
+      <div class="about-highlight">
+        <span>🌍</span>
+        <div>
+          <h3>Berbasis Digital</h3>
+          <p>Transformasi Hospitality Menggunakan Teknologi Modern.</p>
+        </div>
+      </div>
+
+      <div class="about-highlight">
+        <span>📊</span>
+        <div>
+          <h3>Data Driven</h3>
+          <p>Seluruh Keputusan Berbasis Data Analytics.</p>
+        </div>
+      </div>
+
+      <div class="about-highlight">
+        <span>🏝️</span>
+        <div>
+          <h3>Indonesia Timur</h3>
+          <p>Fokus Pengembangan Pariwisata Merauke & Papua.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- MAP -->
+  <section class="map-section" id="location">
+
+    <div class="section-tag" style="text-align:center;">
+      ● Lokasi
+    </div>
+
+    <h2 class="section-title" style="text-align:center;">
+      LOKASI OPERASIONAL <br>
+      <span>MERAUKE</span>
+    </h2>
+
+    <div class="map-container">
+      <iframe
+        src="https://www.google.com/maps?q=Merauke,Papua&output=embed"
+        allowfullscreen=""
+        loading="lazy">
+      </iframe>
+    </div>
+
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section">
+
+    <div>
+      <h2>Siap Melihat Data Anda?</h2>
+      <p>
+        Login Sebagai Admin Atau User Untuk Mengakses Dashboard Analitik Lengkap.
+      </p>
+    </div>
+
+    <a href="{{ url_for('auth.login') }}" class="btn-primary">
+      Masuk Sekarang →
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Nusantara Hospitality Group. Kelompok 2.</p>
+    <p style="color:#555;">
+      Hotel · Resort · Restoran
+    </p>
+  </footer>
+
+</div>
+
+{% endblock %}

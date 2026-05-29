@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+{% block title %}Tren Musiman — Nusantara{% endblock %}
+{% block content %}
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="dash-layout">
+  {% include 'user/_sidebar.html' %}
+  <main class="dash-main">
+    <div class="dash-header">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">&#9776;</button>
+      <div class="dash-header-left"><h2>Tren Musiman</h2><p>Pola Reservasi & Revenue Per Kuartal</p></div>
+      <div class="dash-header-right"><span class="header-badge" style="background:rgba(33,150,243,0.1);border-color:rgba(33,150,243,0.3);color:#2196F3;">● View Only</span></div>
+    </div>
+    <div class="dash-body">
+      <form method="GET" style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+        <select name="year" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Tahun</option>
+          {% for y in filter_opts.years %}<option value="{{ y }}" {{ 'selected' if selected.year == y|string }}>{{ y }}</option>{% endfor %}
+        </select>
+        <select name="hotel_type" onchange="this.form.submit()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;">
+          <option value="">Semua Tipe Hotel</option>
+          {% for h in filter_opts.hotel_types %}<option value="{{ h }}" {{ 'selected' if selected.hotel_type == h }}>{{ h }}</option>{% endfor %}
+        </select>
+        {% if selected.year or selected.hotel_type %}
+        <a href="{{ url_for('user.seasonal') }}" style="padding:9px 14px;background:var(--red-glow);border:1px solid var(--red);border-radius:8px;color:var(--red);font-size:13px;text-decoration:none;">✕ Reset</a>
+        {% endif %}
+      </form>
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">Total Reservasi</span><div class="kpi-icon">📋</div></div><div class="kpi-value">{{ "{:,}".format(kpi.total_reservasi) }}</div><div class="kpi-change up">↑ Semua periode</div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">Avg. Menginap</span><div class="kpi-icon">🌙</div></div><div class="kpi-value">{{ kpi.avg_nights }}<span> malam</span></div><div class="kpi-change up">Per reservasi</div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">Cancel Rate</span><div class="kpi-icon">❌</div></div><div class="kpi-value">{{ kpi.cancel_rate }}<span>%</span></div><div class="kpi-change {{ 'down' if kpi.cancel_rate > 20 else 'up' }}">{{ '↑ Perlu perhatian' if kpi.cancel_rate > 20 else '↓ Terkendali' }}</div></div>
+        <div class="kpi-card"><div class="kpi-top"><span class="kpi-label">Total Tamu</span><div class="kpi-icon">👥</div></div><div class="kpi-value">{{ "{:,}".format(kpi.total_tamu) }}</div><div class="kpi-change up">↑ Tamu unik</div></div>
+      </div>
+      <div class="charts-grid" style="grid-template-columns:1fr 1fr;margin-bottom:24px;">
+        <div class="chart-card"><div class="chart-title">Jumlah Reservasi Per Kuartal</div><div class="chart-sub">Total Booking Setiap Kuartal</div><div class="chart-wrap"><canvas id="chartRes"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Revenue Per Kuartal (Rp)</div><div class="chart-sub">Total Pendapatan Setiap Kuartal</div><div class="chart-wrap"><canvas id="chartRev"></canvas></div></div>
+      </div>
+      <div class="charts-grid" style="grid-template-columns:1fr 1fr;margin-bottom:24px;">
+        <div class="chart-card"><div class="chart-title">Rata-rata Lama Menginap</div><div class="chart-sub">Avg Nights Per Kuartal</div><div class="chart-wrap"><canvas id="chartNights"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Tren Okupansi Per Tipe Hotel</div><div class="chart-sub">Perbandingan Antar Properti</div><div class="chart-wrap"><canvas id="chartOkup"></canvas></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+const seas={{ seasonal|safe }}, occ={{ occupancy|safe }};
+const COLORS=['#e53935','#2196F3','#4CAF50','#FF9800','#9C27B0'];
+const gc='rgba(255,255,255,0.06)';
+Chart.defaults.color='#f0f0f0'; Chart.defaults.font.family='Inter';
+new Chart(document.getElementById('chartRes'),{type:'bar',data:{labels:seas.labels,datasets:[{label:'Reservasi',data:seas.reservasi,backgroundColor:'#2196F3',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc}},y:{grid:{color:gc}}}}});
+new Chart(document.getElementById('chartRev'),{type:'bar',data:{labels:seas.labels,datasets:[{label:'Revenue',data:seas.revenue,backgroundColor:'#e53935',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc}},y:{grid:{color:gc}}}}});
+new Chart(document.getElementById('chartNights'),{type:'line',data:{labels:seas.labels,datasets:[{label:'Avg Malam',data:seas.avg_nights,borderColor:'#4CAF50',backgroundColor:'rgba(76,175,80,0.1)',fill:true,tension:0.4,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc}},y:{grid:{color:gc}}}}});
+const labels=[]; const ds=[];
+Object.keys(occ).forEach((ht,i)=>{
+  if(occ[ht].labels.length>0){
+    if(!labels.length) occ[ht].labels.forEach(l=>labels.push(l));
+    ds.push({label:ht,data:occ[ht].reservasi,borderColor:COLORS[i],backgroundColor:COLORS[i]+'22',fill:false,tension:0.4,pointRadius:4});
+  }
+});
+new Chart(document.getElementById('chartOkup'),{type:'line',data:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:12}}},scales:{x:{grid:{color:gc}},y:{grid:{color:gc}}}}});
+</script>
+{% endblock %}
