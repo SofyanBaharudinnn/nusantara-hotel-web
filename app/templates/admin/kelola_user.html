@@ -1,28 +1,7 @@
-﻿{% extends "base.html" %}
-{% block title %}Kelola User — Nusantara<script>
-
-// ── SIDEBAR MOBILE TOGGLE ─────────────────────────
-function openSidebar() {
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sidebar-overlay').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('active');
-  document.body.style.overflow = '';
-}
-function toggleSidebar() {
-  var sb = document.getElementById('sidebar');
-  sb.classList.contains('open') ? closeSidebar() : openSidebar();
-}
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
-document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el) {
-  el.addEventListener('click', function() { if (window.innerWidth <= 768) closeSidebar(); });
-});
-</script>
-{% endblock %}
+{% extends "base.html" %}
+{% block title %}Kelola User — Nusantara Hospitality{% endblock %}
 {% block content %}
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div class="dash-layout">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo"><div class="sidebar-logo-dot"></div><span class="sidebar-logo-text">NUSANTARA HOSPITALITY GROUP</span><span class="sidebar-role">Admin</span></div>
@@ -42,7 +21,7 @@ document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el)
       <div class="dash-header-left"><h2>Kelola User</h2><p>Manajemen AkunAdmin & user</p></div>
     </div>
     <div class="dash-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="kelola-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
         <div class="table-card">
           <div class="chart-title" style="margin-bottom:20px;">➕ Tambah User Baru</div>
           <form method="POST" action="{{ url_for('admin.tambah_user') }}">
@@ -82,11 +61,14 @@ document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el)
                   {% else %}<span class="badge badge-green">User</span>{% endif %}
                 </td>
                 <td>
-                  {% if u.id != current_user.id %}
-                  <form method="POST" action="{{ url_for('admin.hapus_user', uid=u.id) }}" onsubmit="return confirm('Hapus user {{ u.username }}?')">
-                    <button type="submit" style="background:rgba(229,57,53,0.15);border:1px solid var(--red);color:var(--red);padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Hapus</button>
-                  </form>
-                  {% else %}<span style="color:var(--muted);font-size:12px;">Anda</span>{% endif %}
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <button onclick="openEditUserModal('{{ u.id }}', '{{ u.username }}', '{{ u.email }}', '{{ u.role }}')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">Edit</button>
+                    {% if u.id != current_user.id %}
+                    <form method="POST" action="{{ url_for('admin.hapus_user', uid=u.id) }}" onsubmit="return confirm('Hapus user {{ u.username }}?')">
+                      <button type="submit" style="background:rgba(229,57,53,0.15);border:1px solid var(--red);color:var(--red);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Hapus</button>
+                    </form>
+                    {% else %}<span style="color:var(--muted);font-size:12px;">Anda</span>{% endif %}
+                  </div>
                 </td>
               </tr>
               {% endfor %}
@@ -96,6 +78,38 @@ document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el)
       </div>
     </div>
   </main>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal" class="modal-overlay-custom" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:99999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div class="modal-content-custom" style="background:#141414;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;width:92%;max-width:440px;color:white;box-shadow:0 20px 40px rgba(0,0,0,0.5);">
+    <div style="display:flex;justify-content:between;align-items:center;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:12px;">
+      <h3 style="margin:0;font-size:18px;font-weight:700;">✏️ Edit User</h3>
+      <button onclick="closeEditUserModal()" style="background:none;border:none;color:#888;font-size:24px;cursor:pointer;margin-left:auto;line-height:1;">&times;</button>
+    </div>
+    <form id="editUserForm" method="POST" action="">
+      <div class="form-group" style="margin-bottom:16px;">
+        <label style="display:block;font-size:11px;color:#888;font-weight:700;margin-bottom:6px;letter-spacing:1px;">USERNAME</label>
+        <input type="text" id="edit_username" name="username" required style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;">
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label style="display:block;font-size:11px;color:#888;font-weight:700;margin-bottom:6px;letter-spacing:1px;">EMAIL</label>
+        <input type="email" id="edit_email" name="email" required style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;">
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label style="display:block;font-size:11px;color:#888;font-weight:700;margin-bottom:6px;letter-spacing:1px;">PASSWORD (KOSONGKAN JIKA TIDAK DIUBAH)</label>
+        <input type="password" name="password" placeholder="Password Baru" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;">
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="display:block;font-size:11px;color:#888;font-weight:700;margin-bottom:6px;letter-spacing:1px;">ROLE</label>
+        <select id="edit_role" name="role" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-size:14px;height:42px;">
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button type="submit" class="login-submit" style="width:100%;background:linear-gradient(135deg,#dc2626,#ef4444);color:white;border:none;padding:12px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;transition:0.3s;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='none';">Simpan Perubahan</button>
+    </form>
+  </div>
 </div>
 <script>
 
@@ -118,5 +132,18 @@ document.addEventListener('keydown', function(e) { if (e.key === 'Escape') close
 document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el) {
   el.addEventListener('click', function() { if (window.innerWidth <= 768) closeSidebar(); });
 });
+
+// ── EDIT USER MODAL FUNCTIONS ─────────────────────
+function openEditUserModal(id, username, email, role) {
+  var form = document.getElementById('editUserForm');
+  form.action = "{{ url_for('admin.kelola_user') }}/edit/" + id;
+  document.getElementById('edit_username').value = username;
+  document.getElementById('edit_email').value = email;
+  document.getElementById('edit_role').value = role;
+  document.getElementById('editUserModal').style.display = 'flex';
+}
+function closeEditUserModal() {
+  document.getElementById('editUserModal').style.display = 'none';
+}
 </script>
 {% endblock %}

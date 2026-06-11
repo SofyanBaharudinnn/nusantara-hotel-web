@@ -95,35 +95,86 @@ nav{
   min-height:100vh;
   display:flex;
   align-items:center;
+  justify-content:space-between;
   padding:140px 7% 100px;
   position:relative;
+  gap:40px;
+  overflow:hidden;
 }
 
-.hero::before{
-  content:'';
-  position:absolute;
-  width:700px;
-  height:700px;
-  border-radius:50%;
-  background:radial-gradient(circle,#dc2626 0%,transparent 70%);
-  top:-250px;
-  right:-250px;
-  opacity:.28;
-  animation:float 8s ease-in-out infinite;
+.hero-content{
+  max-width:560px;
+  position:relative;
+  z-index:2;
+  animation:fadeUp 1.2s ease;
+  flex-shrink:0;
 }
 
-.hero::after{
-  content:'';
-  position:absolute;
-  width:500px;
-  height:500px;
-  border-radius:50%;
-  background:radial-gradient(circle,#ef4444 0%,transparent 70%);
-  bottom:-180px;
-  left:-150px;
-  opacity:.22;
-  animation:float2 10s ease-in-out infinite;
+/* 3D Canvas Side */
+.hero-3d{
+  flex:1;
+  position:relative;
+  z-index:2;
+  min-height:520px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
+
+#hero-canvas{
+  width:100% !important;
+  height:520px !important;
+  border-radius:24px;
+  cursor:grab;
+}
+#hero-canvas:active{ cursor:grabbing; }
+
+/* Floating stat cards over 3D */
+.hero-3d-card{
+  position:absolute;
+  background:rgba(20,20,20,0.85);
+  border:1px solid rgba(229,57,53,0.3);
+  border-radius:14px;
+  padding:14px 18px;
+  backdrop-filter:blur(16px);
+  z-index:10;
+  animation:floatCard 4s ease-in-out infinite;
+  pointer-events:none;
+}
+.hero-3d-card .card-val{
+  font-size:22px;
+  font-weight:800;
+  color:#fff;
+  letter-spacing:-0.5px;
+}
+.hero-3d-card .card-val span{ color:#e53935; }
+.hero-3d-card .card-lbl{
+  font-size:11px;
+  color:#888;
+  margin-top:2px;
+  letter-spacing:.05em;
+}
+.hero-3d-card .card-dot{
+  width:7px; height:7px;
+  background:#2ed573;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:5px;
+  animation:blink 1.4s infinite;
+}
+.card-top-right{ top:24px; right:24px; animation-delay:0s; }
+.card-bottom-left{ bottom:60px; left:10px; animation-delay:1.5s; }
+.card-middle-right{ bottom:160px; right:10px; animation-delay:0.8s; }
+
+@keyframes floatCard{
+  0%,100%{transform:translateY(0px);}
+  50%{transform:translateY(-12px);}
+}
+@keyframes blink{
+  0%,100%{opacity:1;} 50%{opacity:.3;}
+}
+
+
 
 @keyframes float{
   0%{transform:translateY(0px);}
@@ -137,12 +188,6 @@ nav{
   100%{transform:translateY(0px);}
 }
 
-.hero-content{
-  max-width:760px;
-  position:relative;
-  z-index:2;
-  animation:fadeUp 1.2s ease;
-}
 
 @keyframes fadeUp{
   from{
@@ -154,6 +199,7 @@ nav{
     transform:translateY(0);
   }
 }
+
 
 .hero-badge{
   display:inline-flex;
@@ -188,7 +234,7 @@ nav{
 }
 
 .hero h1{
-  font-size:74px;
+  font-size:clamp(38px,7vw,74px);
   line-height:1.08;
   margin-bottom:24px;
   font-weight:800;
@@ -198,6 +244,16 @@ nav{
   background:linear-gradient(135deg,#ff4d4d,#dc2626);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+}
+.typed-cursor {
+  color: #ff4d4d;
+  animation: blinkCursor 0.8s infinite;
+  font-weight: 300;
+  margin-left: 4px;
+}
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .hero p{
@@ -297,7 +353,7 @@ nav{
 }
 
 .section-title{
-  font-size:54px;
+  font-size:clamp(28px,5vw,54px);
   margin-bottom:22px;
   line-height:1.2;
 }
@@ -377,7 +433,7 @@ nav{
 }
 
 .about-content h2{
-  font-size:52px;
+  font-size:clamp(28px,4vw,52px);
   margin-bottom:25px;
 }
 
@@ -420,7 +476,7 @@ nav{
 
 .map-container iframe{
   width:100%;
-  height:450px;
+  height:clamp(260px,40vw,450px);
   border:none;
 }
 
@@ -459,52 +515,77 @@ footer{
 /* ================= RESPONSIVE ================= */
 
 @media(max-width:900px){
-
-  nav{
-    padding:18px 20px;
-  }
-
-  .nav-links{
-    display:none;
-  }
-
-  .hero{
-    padding:140px 20px 100px;
-  }
-
-  .hero h1{
-    font-size:54px;
-  }
-
-  .section-title,
-  .about-content h2{
-    font-size:40px;
-  }
-
-  .about-section{
-    grid-template-columns:1fr;
-    padding:100px 20px;
-  }
-
-  .section{
-    padding:100px 20px;
-  }
-
-  .stats-bar{
-    width:92%;
-  }
-
-  .cta-section{
-    margin:0 20px 100px;
-    padding:40px 30px;
-  }
+  nav{ padding:18px 24px; }
+  .hero{ padding:110px 24px 80px; flex-direction:column; }
+  .hero-content{ max-width:100%; }
+  .hero-3d{ width:100%; min-height:360px; }
+  #hero-canvas{ height:360px !important; }
+  .about-section{ grid-template-columns:1fr; padding:80px 24px; gap:40px; }
+  .section{ padding:80px 24px; }
+  .stats-bar{ width:92%; }
+  .cta-section{ margin:0 24px 80px; padding:40px 30px; flex-direction:column; gap:24px; text-align:center; }
+  .map-section{ padding:0 24px 80px; }
 }
+
+@media(max-width:640px){
+  nav{ padding:14px 16px; }
+  .nav-links{ display:none !important; }
+  .hero{ padding:90px 16px 60px; text-align:center; flex-direction:column; }
+  .hero p{ max-width:100%; }
+  .hero-btns{ justify-content:center; flex-wrap:wrap; }
+  .hero-3d{ display:flex; min-height:320px; width:100%; }
+  #hero-canvas{ height:320px !important; }
+  .hero-3d-card{ display:none; }
+  .section{ padding:56px 16px; }
+  .about-section{ padding:56px 16px; grid-template-columns:1fr; gap:32px; }
+  .map-section{ padding:0 16px 60px; }
+  .cta-section{ margin:0 16px 56px; padding:28px 20px; flex-direction:column; gap:20px; text-align:center; }
+  .cta-section h2{ font-size:clamp(20px,5vw,32px); }
+  footer{ padding:24px 16px; }
+  .features-grid,.sources-grid{ grid-template-columns:1fr; margin-top:40px; }
+  .stats-bar{ width:100%; margin-top:-20px; gap:12px; grid-template-columns:1fr 1fr; }
+  .stat-item{ border-radius:16px; padding:24px 20px; }
+  .btn-primary,.btn-outline{ width:100%; text-align:center; }
+}
+
+/* ================= SCROLL REVEAL ANIMATIONS ================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.reveal.reveal-left {
+  transform: translateX(-50px);
+}
+
+.reveal.reveal-right {
+  transform: translateX(50px);
+}
+
+.reveal.reveal-scale {
+  transform: scale(0.94);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translate(0) scale(1);
+}
+
+/* Staggered Delays */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+.delay-500 { transition-delay: 500ms; }
+.delay-600 { transition-delay: 600ms; }
 </style>
 
 <div class="landing">
 
   <!-- NAV -->
-  <nav>
+  <nav id="main-nav">
     <a href="{{ url_for('main.landing') }}" class="nav-logo">
       <div class="nav-logo-dot"></div>
       <span>Nusantara Hospitality Group</span>
@@ -518,29 +599,36 @@ footer{
       <li><a href="#location">Lokasi</a></li>
     </ul>
 
-    <a href="{{ url_for('auth.login') }}" class="nav-btn">
-      Masuk Dashboard →
-    </a>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="{{ url_for('auth.login') }}" class="nav-btn">Masuk →</a>
+      <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNavMenu()" aria-label="Menu">☰</button>
+    </div>
   </nav>
+
+  <!-- Mobile nav dropdown -->
+  <div class="nav-mobile-menu" id="nav-mobile-menu">
+    <a href="#overview" onclick="closeNavMenu()">Overview</a>
+    <a href="#features" onclick="closeNavMenu()">Fitur</a>
+    <a href="#data" onclick="closeNavMenu()">Data</a>
+    <a href="#about" onclick="closeNavMenu()">About</a>
+    <a href="#location" onclick="closeNavMenu()">Lokasi</a>
+    <a href="{{ url_for('auth.login') }}" class="nav-btn">Masuk Dashboard →</a>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
 
     <div class="hero-content">
 
-      <div class="hero-badge">
-        <div class="hero-badge-dot"></div>
-        Hotel & Hospitality Analytics
-      </div>
 
       <h1>
         Data Intelligence<br>
-        Untuk <span>Hotel & Hospitality</span>
+        Untuk <span id="typed-text">Hotel &amp; Hospitality</span><span class="typed-cursor">|</span>
       </h1>
 
       <p>
         Platform Analisis Data Terpadu Untuk Nusantara Hospitality Group —
-        Memantau Okupansi, Perilaku Pelanggan, & Tren Musiman
+        Memantau Okupansi, Perilaku Pelanggan, &amp; Tren Musiman
         Dari Satu Dashboard Modern.
       </p>
 
@@ -556,34 +644,55 @@ footer{
 
     </div>
 
+    <!-- 3D CANVAS -->
+    <div class="hero-3d">
+      <canvas id="hero-canvas"></canvas>
+
+      <!-- Floating Info Cards -->
+      <div class="hero-3d-card card-top-right">
+        <div class="card-val"><span>85</span>%</div>
+        <div class="card-lbl"><span class="card-dot"></span>Tingkat Okupansi</div>
+      </div>
+
+      <div class="hero-3d-card card-middle-right">
+        <div class="card-val">12<span>K+</span></div>
+        <div class="card-lbl"><span class="card-dot"></span>Data Reservasi</div>
+      </div>
+
+      <div class="hero-3d-card card-bottom-left">
+        <div class="card-val">3<span>+</span></div>
+        <div class="card-lbl"><span class="card-dot"></span>Properti Aktif</div>
+      </div>
+    </div>
+
   </section>
 
   <!-- STATS -->
   <div class="stats-bar" id="overview">
 
-    <div class="stat-item">
-      <div class="stat-num">3+</div>
+    <div class="stat-item reveal">
+      <div class="stat-num" data-target="3" data-suffix="+">0+</div>
       <div class="stat-label">
         Properti Hotel, Resort, & Restoran
       </div>
     </div>
 
-    <div class="stat-item">
-      <div class="stat-num">4</div>
+    <div class="stat-item reveal delay-100">
+      <div class="stat-num" data-target="4" data-suffix="">0</div>
       <div class="stat-label">
         Sumber Data Terintegrasi
       </div>
     </div>
 
-    <div class="stat-item">
-      <div class="stat-num">85%</div>
+    <div class="stat-item reveal delay-200">
+      <div class="stat-num" data-target="85" data-suffix="%">0%</div>
       <div class="stat-label">
         Tingkat Okupansi Rata-rata
       </div>
     </div>
 
-    <div class="stat-item">
-      <div class="stat-num">12K+</div>
+    <div class="stat-item reveal delay-300">
+      <div class="stat-num" data-target="12" data-suffix="K+">0K+</div>
       <div class="stat-label">
         Data Reservasi Tercatat
       </div>
@@ -594,21 +703,21 @@ footer{
   <!-- FEATURES -->
   <section class="section" id="features">
 
-    <div class="section-tag">● Fitur Analisis</div>
+    <div class="section-tag reveal">● Fitur Analisis</div>
 
-    <h2 class="section-title">
+    <h2 class="section-title reveal delay-100">
       TIGA FOKUS ANALISIS <br>
       <span>UTAMA</span>
     </h2>
 
-    <p class="section-desc">
+    <p class="section-desc reveal delay-200">
       Solusi Analitik Modern Untuk Membantu Pengambilan Keputusan
       Berbasis Data Secara Cepat dan Akurat.
     </p>
 
     <div class="features-grid">
 
-      <div class="feat-card">
+      <div class="feat-card reveal">
         <div class="feat-icon">🏨</div>
         <div class="feat-title">Okupansi Hotel</div>
         <div class="feat-desc">
@@ -617,7 +726,7 @@ footer{
         </div>
       </div>
 
-      <div class="feat-card">
+      <div class="feat-card reveal delay-100">
         <div class="feat-icon">👥</div>
         <div class="feat-title">Customer Behavior</div>
         <div class="feat-desc">
@@ -626,7 +735,7 @@ footer{
         </div>
       </div>
 
-      <div class="feat-card">
+      <div class="feat-card reveal delay-200">
         <div class="feat-icon">📈</div>
         <div class="feat-title">Seasonal Trend</div>
         <div class="feat-desc">
@@ -642,34 +751,34 @@ footer{
   <!-- DATA -->
   <section class="section" id="data" style="padding-top:0;">
 
-    <div class="section-tag">● Sumber Data</div>
+    <div class="section-tag reveal">● Sumber Data</div>
 
-    <h2 class="section-title">
+    <h2 class="section-title reveal delay-100">
       DATA TERINTEGRASI DARI <br>
       <span>4 SISTEM</span>
     </h2>
 
     <div class="sources-grid">
 
-      <div class="source-card">
+      <div class="source-card reveal">
         <div class="ic">📋</div>
         <p>Reservation System</p>
         <span>Data Pemesanan & Kamar</span>
       </div>
 
-      <div class="source-card">
+      <div class="source-card reveal delay-100">
         <div class="ic">💳</div>
         <p>Payment System</p>
         <span>Transaksi & Revenue</span>
       </div>
 
-      <div class="source-card">
+      <div class="source-card reveal delay-200">
         <div class="ic">🤝</div>
         <p>CRM</p>
         <span>Profil & Histori Tamu</span>
       </div>
 
-      <div class="source-card">
+      <div class="source-card reveal delay-300">
         <div class="ic">🌐</div>
         <p>Online Booking</p>
         <span>Channel Digital & OTA</span>
@@ -682,7 +791,7 @@ footer{
   <!-- ABOUT -->
   <section class="about-section" id="about">
 
-    <div class="about-content">
+    <div class="about-content reveal reveal-left">
 
       <div class="section-tag">● About Company</div>
 
@@ -703,7 +812,7 @@ footer{
 
     </div>
 
-    <div class="about-box">
+    <div class="about-box reveal reveal-right">
 
       <div class="about-highlight">
         <span>🌍</span>
@@ -736,16 +845,16 @@ footer{
   <!-- MAP -->
   <section class="map-section" id="location">
 
-    <div class="section-tag" style="text-align:center;">
+    <div class="section-tag reveal" style="text-align:center;">
       ● Lokasi
     </div>
 
-    <h2 class="section-title" style="text-align:center;">
+    <h2 class="section-title reveal delay-100" style="text-align:center;">
       LOKASI OPERASIONAL <br>
       <span>MERAUKE</span>
     </h2>
 
-    <div class="map-container">
+    <div class="map-container reveal reveal-scale delay-200">
       <iframe
         src="https://www.google.com/maps?q=Merauke,Papua&output=embed"
         allowfullscreen=""
@@ -755,30 +864,631 @@ footer{
 
   </section>
 
-  <!-- CTA -->
-  <div class="cta-section">
-
-    <div>
-      <h2>Siap Melihat Data Anda?</h2>
-      <p>
-        Login Sebagai Admin Atau User Untuk Mengakses Dashboard Analitik Lengkap.
-      </p>
-    </div>
-
-    <a href="{{ url_for('auth.login') }}" class="btn-primary">
-      Masuk Sekarang →
-    </a>
-
-  </div>
 
   <!-- FOOTER -->
-  <footer>
-    <p>© 2026 Nusantara Hospitality Group. Kelompok 2.</p>
-    <p style="color:#555;">
-      Hotel · Resort · Restoran
-    </p>
+  <footer style="background: #0a0a0a; padding: 80px 7% 40px; border-top: 1px solid rgba(255,255,255,0.03); text-align: left; position: relative; display: flex; flex-direction: column; align-items: stretch;">
+    
+    <!-- Top Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 60px;">
+      
+      <!-- Brand & Desc -->
+      <div style="grid-column: span 1;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+          <div style="width: 14px; height: 14px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 0 16px rgba(220,38,38,0.5);"></div>
+          <span style="color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">Nusantara Hospitality</span>
+        </div>
+        <p style="color: #777; line-height: 1.8; font-size: 15px; max-width: 320px;">
+          Sistem intelijen bisnis mutakhir untuk memonitor, menganalisis, dan memaksimalkan potensi operasional hotel dan resor Anda melalui kekuatan data terpadu.
+        </p>
+      </div>
+
+      <!-- Modul -->
+      <div>
+        <h4 style="color: #eee; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 24px;">Modul Analitik</h4>
+        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px;">
+          <li><a href="{{ url_for('user.okupansi') }}" style="color: #777; text-decoration: none; font-size: 15px; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#777'">Okupansi &amp; Hunian</a></li>
+          <li><a href="{{ url_for('user.customer') }}" style="color: #777; text-decoration: none; font-size: 15px; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#777'">Customer Behavior</a></li>
+          <li><a href="{{ url_for('user.room') }}" style="color: #777; text-decoration: none; font-size: 15px; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#777'">Room Management</a></li>
+        </ul>
+      </div>
+
+      <!-- Tautan -->
+      <div>
+        <h4 style="color: #eee; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 24px;">Tautan</h4>
+        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px;">
+          <li><a href="#overview" style="color: #777; text-decoration: none; font-size: 15px; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#777'">Overview</a></li>
+          <li><a href="#features" style="color: #777; text-decoration: none; font-size: 15px; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#777'">Fitur Utama</a></li>
+          <li><a href="#data" style="color: #777; text-decoration: none; font-size: 15px; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#777'">Sumber Data</a></li>
+          <li><a href="{{ url_for('auth.login') }}" style="color: #ef4444; text-decoration: none; font-size: 15px; transition: 0.2s; font-weight: 500;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#ef4444'">Login Portal →</a></li>
+        </ul>
+      </div>
+
+      <!-- Tim Pengembang -->
+      <div>
+        <h4 style="color: #eee; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 24px;">Dikembangkan Oleh</h4>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 22px; border-radius: 16px; transition: 0.3s; display: flex; align-items: center; gap: 20px;" onmouseover="this.style.borderColor='rgba(239,68,68,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.04)'">
+          <img src="{{ url_for('static', filename='img/logo_musamus.png') }}" alt="Logo Universitas Musamus" style="height: 68px; width: auto; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(255,255,255,0.08));" />
+          <div>
+            <p style="color: #fff; font-weight: 600; font-size: 15px; margin-bottom: 6px;">Tim Kelompok 2</p>
+            <p style="color: #777; font-size: 13px; line-height: 1.6; margin-bottom: 10px; margin-top: 0;">
+              Proyek Akhir Data Warehouse & OLAP<br>Universitas Musamus Merauke
+            </p>
+            <a href="mailto:info@nusantarahospitality.com" style="color: #777; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#777'">
+              <span style="font-size: 14px;">✉️</span> hello@nusantarahospitality.com
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 35px; border-top: 1px solid rgba(255,255,255,0.04); flex-wrap: wrap; gap: 20px;">
+      
+      <div style="display: flex; gap: 24px;">
+        <p style="color: #555; margin: 0; font-size: 14px;">© 2026 Nusantara Hospitality Group. Hak Cipta Dilindungi.</p>
+      </div>
+
+      <!-- Tech Stack -->
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <span style="color: #444; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-right: 8px;">Powered By</span>
+        <span style="color: #666; font-size: 13px; font-weight: 600;">Python</span>
+        <span style="color: #666; font-size: 13px; font-weight: 600;">Flask</span>
+        <span style="color: #666; font-size: 13px; font-weight: 600;">PostgreSQL</span>
+      </div>
+
+    </div>
   </footer>
 
 </div>
+
+<script>
+function toggleNavMenu() {
+  var m = document.getElementById('nav-mobile-menu');
+  m.classList.toggle('open');
+}
+function closeNavMenu() {
+  document.getElementById('nav-mobile-menu').classList.remove('open');
+}
+window.addEventListener('scroll', closeNavMenu, {passive:true});
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeNavMenu(); });
+
+// Typewriter Animation
+document.addEventListener('DOMContentLoaded', function() {
+  var words = ["Hotel & Hospitality", "Resort & Villa", "Restoran Modern", "Sistem Analitik"];
+  var wordIdx = 0;
+  var charIdx = 0;
+  var isDeleting = false;
+  var target = document.getElementById('typed-text');
+  var speed = 100;
+
+  function type() {
+    if (!target) return;
+    var currentWord = words[wordIdx];
+    if (isDeleting) {
+      target.textContent = currentWord.substring(0, charIdx - 1);
+      charIdx--;
+      speed = 50;
+    } else {
+      target.textContent = currentWord.substring(0, charIdx + 1);
+      charIdx++;
+      speed = 120;
+    }
+
+    if (!isDeleting && charIdx === currentWord.length) {
+      isDeleting = true;
+      speed = 1800;
+    } else if (isDeleting && charIdx === 0) {
+      isDeleting = false;
+      wordIdx = (wordIdx + 1) % words.length;
+      speed = 500;
+    }
+
+    setTimeout(type, speed);
+  }
+
+  if (target) {
+    type();
+  }
+
+  // Intersection Observer for scroll reveal animations
+  var revealElements = document.querySelectorAll('.reveal');
+  var observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -60px 0px',
+    threshold: 0.05
+  };
+
+  function animateCounter(el) {
+    var targetVal = parseInt(el.getAttribute('data-target'), 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    var duration = 1600; // ms
+    var startTimestamp = null;
+    
+    function step(timestamp) {
+      if (!startTimestamp) startTimestamp = timestamp;
+      var progress = timestamp - startTimestamp;
+      var progressRatio = Math.min(progress / duration, 1.0);
+      
+      // Easing: easeOutQuad
+      var easedRatio = progressRatio * (2 - progressRatio);
+      var currentVal = Math.floor(easedRatio * targetVal);
+      
+      el.textContent = currentVal + suffix;
+      
+      if (progress < duration) {
+        window.requestAnimationFrame(step);
+      } else {
+        el.textContent = targetVal + suffix;
+      }
+    }
+    window.requestAnimationFrame(step);
+  }
+
+  var revealObserver = new IntersectionObserver(function(entries, observer) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        
+        // Trigger count-up animation for stats numbers
+        var counterElements = entry.target.querySelectorAll('.stat-num[data-target]');
+        counterElements.forEach(function(el) {
+          // Adjust delay based on card's scroll reveal transition-delay
+          var delay = 150;
+          if (entry.target.classList.contains('delay-100')) delay += 100;
+          else if (entry.target.classList.contains('delay-200')) delay += 200;
+          else if (entry.target.classList.contains('delay-300')) delay += 300;
+          
+          setTimeout(function() {
+            animateCounter(el);
+          }, delay);
+        });
+
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+
+  // Start observing scroll reveals ONLY after the preloader starts fading out!
+  // This prevents animations from playing invisibly in the background on refresh/restore scroll.
+  function startObserving() {
+    revealElements.forEach(function(el) {
+      revealObserver.observe(el);
+    });
+  }
+
+  var loader = document.getElementById('preloader');
+  if (!loader || loader.classList.contains('fade-out')) {
+    startObserving();
+  } else {
+    window.addEventListener('preloaderhide', startObserving);
+  }
+});
+</script>
+
+<!-- Load OrbitControls -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+
+<!-- ═══════════════ 3D LUXURY INDONESIA MAP ═══════════════ -->
+<script>
+(function() {
+  var canvas = document.getElementById('hero-canvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  /* ── Renderer Setup ── */
+  var W = canvas.parentElement.clientWidth || 560;
+  var H = canvas.parentElement.clientHeight || 520;
+  if (H < 100) H = 520;
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = true;
+
+  /* ── Scene & Camera Setup ── */
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x070707, 0.08);
+
+  var camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 100);
+  camera.position.set(0, 4.5, 6.5);
+
+  /* ── Orbit Controls ── */
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.enableZoom = true;
+  controls.minDistance = 3.5;
+  controls.maxDistance = 12;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.35;
+  controls.target.set(0, 0, 0);
+
+  // Tilt limits to keep view clean
+  controls.minPolarAngle = Math.PI / 6;
+  controls.maxPolarAngle = Math.PI / 2.1;
+
+  /* ── Map Group ── */
+  var mapGroup = new THREE.Group();
+  scene.add(mapGroup);
+
+  /* ── Helper to Convert Lon/Lat to X-Z Coordinates ── */
+  function lonLatToVector3(lon, lat, height) {
+    var h = height || 0;
+    var x = (lon - 118) * 0.23;
+    var z = -(lat - (-2.5)) * 0.23;
+    return new THREE.Vector3(x, h, z);
+  }
+
+  /* ── Island Coordinates definitions (Lon / Lat) ── */
+  var sumatraCoords = [
+    [95.3, 5.6], [96.2, 5.0], [97.6, 4.2], [99.0, 2.7], 
+    [101.0, 0.5], [102.4, -1.3], [103.8, -3.2], [105.8, -5.8], 
+    [105.1, -6.1], [104.2, -5.2], [102.2, -3.8], [101.0, -2.0], 
+    [98.5, 0.5], [97.0, 1.5], [95.8, 3.0], [95.0, 4.5], [95.3, 5.6]
+  ];
+
+  var javaCoords = [
+    [105.2, -6.0], [106.5, -5.9], [108.5, -6.3], [110.5, -6.6], 
+    [112.5, -6.9], [114.0, -7.8], [114.6, -8.2], [114.2, -8.6], 
+    [113.0, -8.3], [111.5, -8.1], [109.5, -7.7], [107.5, -7.3], 
+    [106.0, -7.0], [105.1, -6.7], [105.2, -6.0]
+  ];
+
+  var kalimantanCoords = [
+    [109.2, 2.0], [108.8, 0.8], [109.5, -1.8], [110.5, -3.0], 
+    [112.0, -3.4], [114.5, -4.2], [116.5, -4.0], [117.2, -1.2], 
+    [118.8, 1.2], [119.3, 2.2], [118.5, 3.2], [117.5, 4.3], 
+    [115.5, 4.7], [114.0, 4.5], [111.5, 3.8], [110.2, 3.0], [109.2, 2.0]
+  ];
+
+  var sulawesiCoords = [
+    [119.5, -5.6], [119.5, -3.0], [119.5, -1.5], [119.8, 0.5], 
+    [121.2, 0.8], [123.0, 0.6], [124.8, 1.6], [125.1, 1.2], 
+    [123.5, 0.1], [121.5, -0.2], [121.0, -0.8], [122.5, -0.8], 
+    [123.5, -0.9], [123.4, -1.4], [121.5, -1.5], [121.2, -2.5], 
+    [122.8, -3.5], [123.1, -5.2], [122.3, -5.3], [121.3, -3.5], 
+    [120.3, -3.5], [120.5, -5.7], [119.5, -5.7]
+  ];
+
+  var papuaCoords = [
+    [130.8, -1.2], [132.5, -0.8], [134.2, -1.5], [135.5, -3.2], 
+    [137.0, -2.5], [139.0, -2.5], [141.0, -2.6], [141.0, -9.0], 
+    [139.0, -8.2], [137.5, -6.5], [136.0, -4.8], [134.5, -4.5], 
+    [132.2, -3.8], [131.5, -3.0], [130.8, -1.2]
+  ];
+
+  var nusaTenggaraCoords = [
+    [114.5, -8.2], [115.5, -8.2], [116.5, -8.3], [118.0, -8.4], 
+    [120.0, -8.5], [122.0, -8.6], [124.0, -8.8], [125.5, -9.0], 
+    [127.0, -8.3], [127.2, -8.7], [125.0, -10.0], [123.5, -10.2], 
+    [121.5, -9.0], [119.0, -8.8], [117.0, -8.7], [115.0, -8.6], [114.5, -8.2]
+  ];
+
+  /* ── Draw Neon Island Outlines ── */
+  function createGlowingOutline(coords, colorHex) {
+    var points = [];
+    coords.forEach(function(c) {
+      points.push(lonLatToVector3(c[0], c[1], 0.02));
+    });
+    
+    var geo = new THREE.BufferGeometry().setFromPoints(points);
+    
+    // Core Neon Line
+    var matCore = new THREE.LineBasicMaterial({
+      color: colorHex,
+      transparent: true,
+      opacity: 0.9,
+    });
+    var coreLine = new THREE.LineLoop(geo, matCore);
+    
+    // Glowing backing (slightly offset on Y and additive blended)
+    var matGlow = new THREE.LineBasicMaterial({
+      color: colorHex,
+      transparent: true,
+      opacity: 0.35,
+      blending: THREE.AdditiveBlending
+    });
+    var glowLine = new THREE.LineLoop(geo, matGlow);
+    glowLine.position.y = 0.04;
+    glowLine.scale.set(1.008, 1, 1.008);
+    
+    var group = new THREE.Group();
+    group.add(coreLine);
+    group.add(glowLine);
+    return group;
+  }
+
+  // Red/Orange Neon color
+  var neonColor = 0xff3b30; 
+  mapGroup.add(createGlowingOutline(sumatraCoords, neonColor));
+  mapGroup.add(createGlowingOutline(javaCoords, neonColor));
+  mapGroup.add(createGlowingOutline(kalimantanCoords, neonColor));
+  mapGroup.add(createGlowingOutline(sulawesiCoords, neonColor));
+  mapGroup.add(createGlowingOutline(papuaCoords, neonColor));
+  mapGroup.add(createGlowingOutline(nusaTenggaraCoords, neonColor));
+
+  /* ── Generate Interior Particle Grid for Landmasses ── */
+  function checkSumatra(lon, lat) {
+    var dx = lon - 101; var dy = lat - (-1);
+    var rx = dx * 0.707 - dy * 0.707; var ry = dx * 0.707 + dy * 0.707;
+    return (rx*rx)/(6*6) + (ry*ry)/(1.8*1.8) <= 1;
+  }
+  function checkJava(lon, lat) {
+    var dx = lon - 110; var dy = lat - (-7.5);
+    return (dx*dx)/(5.5*5.5) + (dy*dy)/(0.6*0.6) <= 1;
+  }
+  function checkKalimantan(lon, lat) {
+    var dx = lon - 114; var dy = lat - 1;
+    return (dx*dx)/(3.3*3.3) + (dy*dy)/(3.3*3.3) <= 1;
+  }
+  function checkSulawesi(lon, lat) {
+    var dx = lon - 121; var dy = lat - (-1.5);
+    if ((dx*dx)/(0.9*0.9) + (dy*dy)/(2.2*2.2) <= 1) return true;
+    var dxN = lon - 122.5; var dyN = lat - 0.5;
+    if ((dxN*dxN)/(2.5*2.5) + (dyN*dyN)/(0.5*0.5) <= 1) return true;
+    var dxSE = lon - 123.5; var dySE = lat - (-3);
+    if ((dxSE*dxSE)/(1.2*1.2) + (dySE*dySE)/(0.6*0.6) <= 1) return true;
+    return false;
+  }
+  function checkPapua(lon, lat) {
+    var dx = lon - 136; var dy = lat - (-3.5);
+    return (dx*dx)/(5.5*5.5) + (dy*dy)/(1.6*1.6) <= 1;
+  }
+  function checkNusaTenggara(lon, lat) {
+    return (lat >= -9.0 && lat <= -8.0 && lon >= 114.5 && lon <= 126.0);
+  }
+
+  var mapCoords = [];
+  var step = 0.32;
+  for (var lon = 95; lon <= 141; lon += step) {
+    for (var lat = -10; lat <= 6; lat += step) {
+      if (checkSumatra(lon, lat) || checkJava(lon, lat) || checkKalimantan(lon, lat) || 
+          checkSulawesi(lon, lat) || checkPapua(lon, lat) || checkNusaTenggara(lon, lat)) {
+        var v = lonLatToVector3(lon + (Math.random()-0.5)*0.1, lat + (Math.random()-0.5)*0.1, 0);
+        mapCoords.push(v.x, (Math.random()-0.5)*0.015, v.z);
+      }
+    }
+  }
+
+  var mapGeo = new THREE.BufferGeometry();
+  mapGeo.setAttribute('position', new THREE.Float32BufferAttribute(mapCoords, 3));
+  var mapMat = new THREE.PointsMaterial({
+    color: 0xff4d4d,
+    size: 0.024,
+    transparent: true,
+    opacity: 0.18,
+    sizeAttenuation: true
+  });
+  var mapParticles = new THREE.Points(mapGeo, mapMat);
+  mapGroup.add(mapParticles);
+
+  /* ── Hubs (Operational Cities) ── */
+  var hubs = [
+    { name: 'Medan', lon: 98.672, lat: 3.595, color: 0xff3b30 },
+    { name: 'Jakarta', lon: 106.845, lat: -6.208, color: 0xff3b30 },
+    { name: 'Surabaya', lon: 112.752, lat: -7.257, color: 0xff3b30 },
+    { name: 'Makassar', lon: 119.417, lat: -5.148, color: 0xff3b30 },
+    { name: 'Jayapura', lon: 140.718, lat: -2.591, color: 0xff3b30 }
+  ];
+
+  /* ── Canvas Sprite Generator for labels ── */
+  function createTextSprite(text, glowColor) {
+    var canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 64;
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 256, 64);
+
+    ctx.font = 'bold 28px "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Text Shadow / Glow
+    ctx.shadowColor = glowColor || 'rgba(239, 68, 68, 0.85)';
+    ctx.shadowBlur = 10;
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(text, 128, 32);
+
+    var texture = new THREE.CanvasTexture(canvas);
+    var material = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      depthWrite: false
+    });
+    var sprite = new THREE.Sprite(material);
+    sprite.scale.set(0.9, 0.225, 1.0);
+    return sprite;
+  }
+
+  /* ── Draw Hubs, Concentric Rings, Pins & Labels ── */
+  var pins = [];
+  var rings = [];
+
+  hubs.forEach(function(hub) {
+    var basePos = lonLatToVector3(hub.lon, hub.lat, 0);
+    var topPos = lonLatToVector3(hub.lon, hub.lat, 0.4);
+
+    // 1. Vertical Pin Line
+    var pinLineGeo = new THREE.BufferGeometry().setFromPoints([basePos, topPos]);
+    var pinLineMat = new THREE.LineBasicMaterial({ color: hub.color, transparent: true, opacity: 0.6 });
+    var pinLine = new THREE.Line(pinLineGeo, pinLineMat);
+    mapGroup.add(pinLine);
+
+    // 2. Hub Glowing Pin Sphere
+    var sphereGeo = new THREE.SphereGeometry(0.045, 16, 16);
+    var sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Bright white core
+    var sphere = new THREE.Mesh(sphereGeo, sphereMat);
+    sphere.position.copy(topPos);
+    mapGroup.add(sphere);
+
+    // 3. Concentric Rings
+    var ringGeo = new THREE.RingGeometry(0.01, 0.22, 32);
+    ringGeo.rotateX(-Math.PI / 2);
+    var ringMat = new THREE.MeshBasicMaterial({
+      color: hub.color,
+      transparent: true,
+      opacity: 0.7,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+    var ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.copy(basePos);
+    ring.position.y = 0.02;
+    mapGroup.add(ring);
+    
+    rings.push({
+      mesh: ring,
+      scale: 0.1 + Math.random() * 0.9,
+      baseOpacity: 0.7
+    });
+
+    // 4. Sprite label below node
+    var label = createTextSprite(hub.name, 'rgba(239, 68, 68, 0.9)');
+    label.position.copy(basePos).add(new THREE.Vector3(0, -0.22, 0));
+    mapGroup.add(label);
+  });
+
+  /* ── Connections and Data Signal Pulses ── */
+  var arcs = [];
+  var signals = [];
+
+  var connections = [
+    { from: 'Medan', to: 'Jakarta', speed: 0.75 },
+    { from: 'Jakarta', to: 'Surabaya', speed: 0.85 },
+    { from: 'Surabaya', to: 'Makassar', speed: 0.8 },
+    { from: 'Makassar', to: 'Jayapura', speed: 0.7 },
+    { from: 'Jakarta', to: 'Jayapura', speed: 0.5 }
+  ];
+
+  connections.forEach(function(conn) {
+    var fromHub = hubs.find(h => h.name === conn.from);
+    var toHub   = hubs.find(h => h.name === conn.to);
+    if (!fromHub || !toHub) return;
+
+    var pA = lonLatToVector3(fromHub.lon, fromHub.lat, 0.4);
+    var pB = lonLatToVector3(toHub.lon, toHub.lat, 0.4);
+
+    var mid = new THREE.Vector3().addVectors(pA, pB).multiplyScalar(0.5);
+    var dist = pA.distanceTo(pB);
+    mid.y = 0.4 + dist * 0.45;
+
+    var curve = new THREE.QuadraticBezierCurve3(pA, mid, pB);
+    
+    // Draw visual connection line
+    var pointsCount = 48;
+    var curvePoints = curve.getPoints(pointsCount);
+    var lineGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+    var lineMat = new THREE.LineBasicMaterial({
+      color: 0xff5e3a, // Glowing red-orange arc
+      transparent: true,
+      opacity: 0.45,
+      blending: THREE.AdditiveBlending
+    });
+    var line = new THREE.Line(lineGeo, lineMat);
+    mapGroup.add(line);
+    arcs.push(line);
+
+    // Glowing signal sphere
+    var sigGeo = new THREE.SphereGeometry(0.045, 10, 10);
+    var sigMat = new THREE.MeshBasicMaterial({ color: 0xffea00 }); // Bright gold pulse
+    var sig = new THREE.Mesh(sigGeo, sigMat);
+    mapGroup.add(sig);
+    
+    signals.push({
+      mesh: sig,
+      curve: curve,
+      progress: Math.random(),
+      speed: conn.speed
+    });
+  });
+
+  /* ── Extra Floating Cyber Particles ── */
+  var CYBER_N = 150;
+  var cPos = new Float32Array(CYBER_N * 3);
+  for (var c = 0; c < CYBER_N; c++) {
+    cPos[c*3]   = (Math.random() - 0.5) * 11;
+    cPos[c*3+1] = 0.2 + Math.random() * 2.2;
+    cPos[c*3+2] = (Math.random() - 0.5) * 6;
+  }
+  var cyberGeo = new THREE.BufferGeometry();
+  cyberGeo.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
+  var cyberMat = new THREE.PointsMaterial({
+    color: 0xff3b30,
+    size: 0.022,
+    transparent: true,
+    opacity: 0.38,
+    sizeAttenuation: true
+  });
+  var cyberParticles = new THREE.Points(cyberGeo, cyberMat);
+  mapGroup.add(cyberParticles);
+
+  /* ── Lights Setup ── */
+  scene.add(new THREE.AmbientLight(0x111111, 3.5));
+
+  var dirLight1 = new THREE.DirectionalLight(0xff4d4d, 1.8);
+  dirLight1.position.set(5, 8, 5);
+  scene.add(dirLight1);
+
+  var dirLight2 = new THREE.DirectionalLight(0xef4444, 1.2);
+  dirLight2.position.set(-5, 3, -5);
+  scene.add(dirLight2);
+
+  /* ── Resize Handling ── */
+  window.addEventListener('resize', function() {
+    var p = canvas.parentElement; if (!p) return;
+    W = p.clientWidth;
+    H = p.clientHeight || 520;
+    if (H < 100) H = 520;
+    renderer.setSize(W, H);
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+  });
+
+  /* ── Animation Loop ── */
+  var clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    var t = clock.getElapsedTime();
+
+    controls.update();
+
+    // Subtle wave on interior particles
+    var posAttr = mapParticles.geometry.attributes.position;
+    var pArr = posAttr.array;
+    for (var i = 0; i < pArr.length; i += 3) {
+      var px = pArr[i];
+      var pz = pArr[i+2];
+      pArr[i+1] = Math.sin(t * 1.5 + px * 1.2 + pz * 1.2) * 0.05;
+    }
+    posAttr.needsUpdate = true;
+
+    // Pulse concentric rings
+    rings.forEach(function(r) {
+      r.scale += 0.01;
+      if (r.scale > 2.0) r.scale = 0.1;
+      r.mesh.scale.set(r.scale, 1, r.scale);
+      r.mesh.material.opacity = r.baseOpacity * (1.0 - r.scale / 2.0);
+    });
+
+    // Move signal pulses
+    signals.forEach(function(sig) {
+      sig.progress += 0.0035 * sig.speed;
+      if (sig.progress > 1.0) sig.progress = 0.0;
+      var pos = sig.curve.getPointAt(sig.progress);
+      sig.mesh.position.copy(pos);
+    });
+
+    // Slow background rotation
+    cyberParticles.rotation.y = t * 0.012;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+})();
+</script>
 
 {% endblock %}

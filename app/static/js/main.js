@@ -1,3 +1,37 @@
+// ══════════════════ SIDEBAR MOBILE TOGGLE (Global) ══════════════════
+function openSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebar-overlay');
+  if (sb) sb.classList.add('open');
+  if (ov) ov.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebar-overlay');
+  if (sb) sb.classList.remove('open');
+  if (ov) ov.classList.remove('active');
+  document.body.style.overflow = '';
+}
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  if (!sb) return;
+  sb.classList.contains('open') ? closeSidebar() : openSidebar();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Close sidebar on ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSidebar();
+  });
+  // Close sidebar when clicking sidebar links on mobile
+  document.querySelectorAll('.sidebar-link, .sidebar-logout').forEach(function(el) {
+    el.addEventListener('click', function() {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
+  });
+});
+
 // Auto-hide flash messages
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.flash').forEach(f => {

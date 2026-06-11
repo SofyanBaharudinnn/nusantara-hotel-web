@@ -1,10 +1,10 @@
-﻿<aside class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="sidebar-logo-dot"></div>
     <span class="sidebar-logo-text">Nusantara</span>
     <span class="sidebar-role" style="background:rgba(33,150,243,0.15);color:#2196F3;border:1px solid rgba(33,150,243,0.3);">User</span>
   </div>
-  <nav class="sidebar-nav">
+  <div class="sidebar-nav">
     <div class="sidebar-section">Menu</div>
     <a href="{{ url_for('user.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.dashboard' }}">
       <span class="ic">📊</span> Dashboard
@@ -21,7 +21,7 @@
     <a href="{{ url_for('user.room') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.room' }}">
       <span class="ic">🛏️</span> Tipe Kamar
     </a>
-  </nav>
+  </div>
   <div class="sidebar-bottom">
     <div class="sidebar-user">
       <div class="sidebar-avatar" style="background:#2196F3;">{{ current_user.username[0].upper() }}</div>

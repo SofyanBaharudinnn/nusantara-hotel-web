@@ -98,6 +98,7 @@ def export(tipe):
         return send_file(buf, download_name=f'{tipe}_nusantara.csv',
                          as_attachment=True, mimetype='text/csv')
 
+
 @admin.route('/kelola-user')
 @login_required
 def kelola_user():
@@ -120,6 +121,28 @@ def tambah_user():
         db.session.commit()
     return redirect(url_for('admin.kelola_user'))
 
+@admin.route('/kelola-user/edit/<int:uid>', methods=['POST'])
+@login_required
+def edit_user(uid):
+    check_admin()
+    u = User.query.get_or_404(uid)
+    username = request.form.get('username')
+    email    = request.form.get('email')
+    password = request.form.get('password')
+    role     = request.form.get('role', 'user')
+    
+    existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+    if existing_user and existing_user.id != uid:
+        return redirect(url_for('admin.kelola_user'))
+        
+    u.username = username
+    u.email = email
+    u.role = role
+    if password:
+        u.set_password(password)
+    db.session.commit()
+    return redirect(url_for('admin.kelola_user'))
+
 @admin.route('/kelola-user/hapus/<int:uid>', methods=['POST'])
 @login_required
 def hapus_user(uid):
@@ -129,6 +152,110 @@ def hapus_user(uid):
         db.session.delete(u)
         db.session.commit()
     return redirect(url_for('admin.kelola_user'))
+
+@admin.route('/customer/edit/<int:guest_key>', methods=['POST'])
+@login_required
+def edit_customer(guest_key):
+    check_admin()
+    guest_name = request.form.get('guest_name')
+    nationality = request.form.get('nationality')
+    segment = request.form.get('segment')
+    city = request.form.get('city')
+    
+    from app.utils.queries import get_engine
+    from sqlalchemy import text
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(
+            text("""
+                UPDATE dim_guest 
+                SET guest_name = :name, nationality = :nat, segment = :seg, city = :city 
+                WHERE guest_key = :key
+            """),
+            {"name": guest_name, "nat": nationality, "seg": segment, "city": city, "key": guest_key}
+        )
+    return redirect(url_for('admin.customer'))
+
+@admin.route('/customer/delete/<int:guest_key>', methods=['POST'])
+@login_required
+def delete_customer(guest_key):
+    check_admin()
+    from app.utils.queries import get_engine
+    from sqlalchemy import text
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM fact_reservation WHERE guest_key = :key"), {"key": guest_key})
+        conn.execute(text("DELETE FROM dim_guest WHERE guest_key = :key"), {"key": guest_key})
+    return redirect(url_for('admin.customer'))
+
+@admin.route('/room/edit/<int:room_key>', methods=['POST'])
+@login_required
+def edit_room(room_key):
+    check_admin()
+    room_type = request.form.get('room_type')
+    capacity = request.form.get('capacity', type=int)
+    base_rate = request.form.get('base_rate', type=float)
+    
+    from app.utils.queries import get_engine
+    from sqlalchemy import text
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(
+            text("""
+                UPDATE dim_room 
+                SET room_type = :type, capacity = :cap, base_rate = :rate 
+                WHERE room_key = :key
+            """),
+            {"type": room_type, "cap": capacity, "rate": base_rate, "key": room_key}
+        )
+    return redirect(url_for('admin.room'))
+
+@admin.route('/room/delete/<int:room_key>', methods=['POST'])
+@login_required
+def delete_room(room_key):
+    check_admin()
+    from app.utils.queries import get_engine
+    from sqlalchemy import text
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM fact_reservation WHERE room_key = :key"), {"key": room_key})
+        conn.execute(text("DELETE FROM dim_room WHERE room_key = :key"), {"key": room_key})
+    return redirect(url_for('admin.room'))
+
+@admin.route('/okupansi/edit/<int:hotel_key>', methods=['POST'])
+@login_required
+def edit_okupansi(hotel_key):
+    check_admin()
+    hotel_name = request.form.get('hotel_name')
+    hotel_type = request.form.get('hotel_type')
+    city = request.form.get('city')
+    
+    from app.utils.queries import get_engine
+    from sqlalchemy import text
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(
+            text("""
+                UPDATE dim_hotel 
+                SET hotel_name = :name, hotel_type = :type, city = :city 
+                WHERE hotel_key = :key
+            """),
+            {"name": hotel_name, "type": hotel_type, "city": city, "key": hotel_key}
+        )
+    return redirect(url_for('admin.okupansi'))
+
+@admin.route('/okupansi/delete/<int:hotel_key>', methods=['POST'])
+@login_required
+def delete_okupansi(hotel_key):
+    check_admin()
+    from app.utils.queries import get_engine
+    from sqlalchemy import text
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(text("DELETE FROM fact_reservation WHERE hotel_key = :key"), {"key": hotel_key})
+        conn.execute(text("DELETE FROM dim_hotel WHERE hotel_key = :key"), {"key": hotel_key})
+    return redirect(url_for('admin.okupansi'))
+
 # pyrefly: ignore [missing-import]
 from flask import jsonify
 

@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request
+# pyrefly: ignore [missing-import]
+from flask import Blueprint, render_template, request, jsonify, send_file
+# pyrefly: ignore [missing-import]
 from flask_login import login_required
 from app.utils.queries import (
     get_kpi_stats, get_seasonal_trend, get_guest_segment,
@@ -6,7 +8,7 @@ from app.utils.queries import (
     get_filter_options, get_channel_distribution,
     get_okupansi_detail, get_customer_detail, get_room_detail
 )
-import json
+import json, io
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -75,3 +77,5 @@ def room():
         filter_opts = get_filter_options(),
         selected    = {'year': year, 'hotel_type': hotel_type, 'channel': channel},
     )
+
+
