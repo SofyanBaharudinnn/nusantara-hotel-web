@@ -580,6 +580,34 @@ footer{
 .delay-400 { transition-delay: 400ms; }
 .delay-500 { transition-delay: 500ms; }
 .delay-600 { transition-delay: 600ms; }
+
+/* ================= RESPONSIVE FOOTER ================= */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.8fr;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 16px;
+  }
+  .footer-grid > div:first-child {
+    grid-column: span 2;
+  }
+  .footer-grid > div:last-child {
+    grid-column: span 2;
+  }
+}
 </style>
 
 <div class="landing">
@@ -869,10 +897,10 @@ footer{
   <footer style="background: #0a0a0a; padding: 80px 7% 40px; border-top: 1px solid rgba(255,255,255,0.03); text-align: left; position: relative; display: flex; flex-direction: column; align-items: stretch;">
     
     <!-- Top Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-bottom: 60px;">
+    <div class="footer-grid">
       
       <!-- Brand & Desc -->
-      <div style="grid-column: span 1;">
+      <div>
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
           <div style="width: 14px; height: 14px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 0 16px rgba(220,38,38,0.5);"></div>
           <span style="color: #fff; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">Nusantara Hospitality</span>
