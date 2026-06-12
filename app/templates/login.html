@@ -131,6 +131,7 @@
       </div>
 
       <form id="login-form" method="POST" action="{{ url_for('auth.login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="form-group">
           <label>USERNAME</label>
           <input type="text" name="username" placeholder="Masukkan username" required autocomplete="username"/>
@@ -143,7 +144,7 @@
       </form>
 
       <p style="text-align:center; margin-top:24px; font-size:14px; color:#888;">
-        Belum memiliki akun? <a href="javascript:void(0)" onclick="toggleForm('register')" style="color:var(--red); text-decoration:none; font-weight:600;">Daftar Sekarang</a>
+        Belum Memiliki Akun? <a href="javascript:void(0)" onclick="toggleForm('register')" style="color:var(--red); text-decoration:none; font-weight:600;">Daftar Sekarang</a>
       </p>
 
       <p style="text-align:center; margin-top:20px; font-size:13px; color:#555;">
@@ -156,9 +157,10 @@
     <!-- REGISTER BOX -->
     <div class="login-box" id="register-form-box" style="display:none;">
       <h2>Daftar Akun Baru</h2>
-      <p>Lengkapi formulir untuk membuat akun baru Anda</p>
+      <p>Lengkapi Formulir Untuk Membuat Akun Baru Anda</p>
 
       <form id="register-form" method="POST" action="{{ url_for('auth.register') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="form-group">
           <label>USERNAME</label>
           <input type="text" name="username" placeholder="Buat username Anda" required autocomplete="username"/>
@@ -175,7 +177,7 @@
       </form>
 
       <p style="text-align:center; margin-top:24px; font-size:14px; color:#888;">
-        Sudah memiliki akun? <a href="javascript:void(0)" onclick="toggleForm('login')" style="color:var(--red); text-decoration:none; font-weight:600;">Masuk Disini</a>
+        Sudah Memiliki Akun? <a href="javascript:void(0)" onclick="toggleForm('login')" style="color:var(--red); text-decoration:none; font-weight:600;">Masuk Disini</a>
       </p>
 
       <p style="text-align:center; margin-top:20px; font-size:13px; color:#555;">
