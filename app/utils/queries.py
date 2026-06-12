@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_engine():
-    url = os.getenv('DW_DATABASE_URL', 'mysql+pymysql://root:@localhost/dw_hospitality')
+    url = os.getenv('DW_DATABASE_URL', 'sqlite:///instance/dw_hospitality.db')
+    if url.startswith('sqlite'):
+        return create_engine(url)
     return create_engine( # type: ignore
         url,
         pool_pre_ping=True,
