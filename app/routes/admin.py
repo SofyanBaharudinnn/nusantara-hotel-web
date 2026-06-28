@@ -163,6 +163,7 @@ def edit_customer(guest_key):
     city = request.form.get('city')
     
     from app.utils.queries import get_engine
+    # pyrefly: ignore [missing-import]
     from sqlalchemy import text
     engine = get_engine()
     with engine.begin() as conn:
@@ -181,6 +182,7 @@ def edit_customer(guest_key):
 def delete_customer(guest_key):
     check_admin()
     from app.utils.queries import get_engine
+    # pyrefly: ignore [missing-import]
     from sqlalchemy import text
     engine = get_engine()
     with engine.begin() as conn:
@@ -197,6 +199,7 @@ def edit_room(room_key):
     base_rate = request.form.get('base_rate', type=float)
     
     from app.utils.queries import get_engine
+    # pyrefly: ignore [missing-import]
     from sqlalchemy import text
     engine = get_engine()
     with engine.begin() as conn:
@@ -215,6 +218,7 @@ def edit_room(room_key):
 def delete_room(room_key):
     check_admin()
     from app.utils.queries import get_engine
+    # pyrefly: ignore [missing-import]
     from sqlalchemy import text
     engine = get_engine()
     with engine.begin() as conn:
@@ -231,6 +235,7 @@ def edit_okupansi(hotel_key):
     city = request.form.get('city')
     
     from app.utils.queries import get_engine
+    # pyrefly: ignore [missing-import]
     from sqlalchemy import text
     engine = get_engine()
     with engine.begin() as conn:
@@ -249,6 +254,7 @@ def edit_okupansi(hotel_key):
 def delete_okupansi(hotel_key):
     check_admin()
     from app.utils.queries import get_engine
+    # pyrefly: ignore [missing-import]
     from sqlalchemy import text
     engine = get_engine()
     with engine.begin() as conn:
